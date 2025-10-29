@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../core/widgets/custom_button.dart';
+import '../../../routes/app_routes.dart';
 import 'widgets/logo_placeholder.dart';
 
 class LoginScreen extends StatelessWidget {
@@ -30,12 +33,14 @@ class LoginScreen extends StatelessWidget {
                   height: 24,
                   width: 24,
                 ),
+                onPressed: () => context.push(AppRoutes.home),
               ),
               const SizedBox(height: 16),
-              const CustomButton(
+              CustomButton(
                 label: 'Phone',
                 backgroundColor: AppColors.primary,
                 textStyle: AppTextStyles.button,
+                onPressed: () => context.push(AppRoutes.phoneAuth),
               ),
               const Spacer(flex: 3),
             ],

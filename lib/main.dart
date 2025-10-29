@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import 'core/constants/app_colors.dart';
 import 'core/constants/app_text_styles.dart';
 import 'routes/app_routes.dart';
 
 void main() {
-  runApp(const HancodApp());
+  runApp(const ProviderScope(child: HancodApp()));
 }
 
 class HancodApp extends StatelessWidget {
