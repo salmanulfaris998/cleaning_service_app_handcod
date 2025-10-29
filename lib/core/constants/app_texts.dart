@@ -32,6 +32,10 @@ class AppTexts {
   static const String serviceHomeCleaning = 'Cleaning';
   static const String servicePlumbing = 'Plumbing';
   static const String serviceWasteDisposal = 'Waste Disposal';
+  static const String cleaningServicesTitle = 'Cleaning Services';
+  static const String homeCleaningService = 'Home Cleaning';
+  static const String carpetCleaningService = 'Carpet Cleaning';
+  static const String sofaCleaningService = 'Sofa Cleaning';
 
   // Bookings
   static const String bookingsTitle = 'Your Bookings';

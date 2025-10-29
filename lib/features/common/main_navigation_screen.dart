@@ -36,8 +36,17 @@ class MainNavigationScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      body: SafeArea(child: child),
-      bottomNavigationBar: const _CustomBottomNavBar(),
+      body: Stack(
+        children: [
+          SafeArea(child: child),
+          Positioned(
+            left: 0,
+            right: 0,
+            bottom: 0,
+            child: const _CustomBottomNavBar(),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -64,7 +73,7 @@ class _CustomBottomNavBar extends ConsumerWidget {
     final selectedIndex = ref.watch(navIndexProvider);
 
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 20, vertical: 14),
+      margin: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: BoxDecoration(
         color: AppColors.cardBackground,

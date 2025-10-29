@@ -7,6 +7,7 @@ import '../../core/constants/app_spacing.dart';
 import '../../core/widgets/location_select_bar.dart';
 import '../../core/widgets/search_bar_field.dart';
 import '../../core/widgets/available_services_section.dart';
+import '../../core/widgets/cleaning_services_section.dart';
 import 'widgets/service_banner_carousel.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -14,9 +15,10 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
+    return SingleChildScrollView(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 18, vertical: AppSpacing.md),
           child: Row(
@@ -60,8 +62,27 @@ class HomeScreen extends StatelessWidget {
           onSeeAll: () {},
         ),
         const SizedBox(height: AppSpacing.xl),
-        const Expanded(child: SizedBox()),
-      ],
+        CleaningServicesSection(
+          services: const [
+            CleaningService(
+              name: AppTexts.homeCleaningService,
+              imagePath: AppImages.serviceHomeCleaning,
+            ),
+            CleaningService(
+              name: AppTexts.carpetCleaningService,
+              imagePath: AppImages.serviceCarpetCleaning,
+            ),
+            CleaningService(
+              name: AppTexts.sofaCleaningService,
+              imagePath: AppImages.serviceSofaCleaning,
+            ),
+          ],
+          onSeeAll: () {},
+        ),
+        const SizedBox(height: AppSpacing.xl),
+        const SizedBox(height: 100), // Extra space for bottom navigation
+        ],
+      ),
     );
   }
 }
