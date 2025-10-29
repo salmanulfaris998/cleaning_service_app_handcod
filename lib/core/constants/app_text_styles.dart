@@ -32,6 +32,12 @@ class AppTextStyles {
     color: Colors.white,
   );
 
+  static const TextStyle buttonDark = TextStyle(
+    fontSize: 16,
+    fontWeight: FontWeight.w600,
+    color: AppColors.textPrimary,
+  );
+
   static const TextStyle caption = TextStyle(
     fontSize: 12,
     fontWeight: FontWeight.w400,
