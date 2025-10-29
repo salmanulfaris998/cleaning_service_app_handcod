@@ -25,6 +25,7 @@ class AppTexts {
   // Home
   static const String homeWelcome = 'Welcome to Hancod Commerce!';
   static const String homeSubtitle = 'Explore services and manage your account.';
+  static const String searchPlaceholder = 'Search for a service';
 
   // Bookings
   static const String bookingsTitle = 'Your Bookings';

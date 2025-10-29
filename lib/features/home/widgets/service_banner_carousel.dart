@@ -50,24 +50,36 @@ class _ServiceBannerCarouselState extends ConsumerState<ServiceBannerCarousel> {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        ClipRRect(
-          borderRadius: BorderRadius.circular(24),
-          child: SizedBox(
-            height: 180,
-            child: PageView.builder(
-              controller: _pageController,
-              onPageChanged: (index) {
-                ref.read(currentPageProvider.notifier).state = index;
-              },
-              itemCount: AppImages.serviceBanners.length,
-              itemBuilder: (context, index) {
-                final asset = AppImages.serviceBanners[index];
-                return Image.asset(
-                  asset,
-                  fit: BoxFit.cover,
-                  width: double.infinity,
-                );
-              },
+        Container(
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(24),
+            boxShadow: const [
+              BoxShadow(
+                color: AppColors.shadow,
+                blurRadius: 18,
+                offset: Offset(0, 10),
+              ),
+            ],
+          ),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(24),
+            child: SizedBox(
+              height: 180,
+              child: PageView.builder(
+                controller: _pageController,
+                onPageChanged: (index) {
+                  ref.read(currentPageProvider.notifier).state = index;
+                },
+                itemCount: AppImages.serviceBanners.length,
+                itemBuilder: (context, index) {
+                  final asset = AppImages.serviceBanners[index];
+                  return Image.asset(
+                    asset,
+                    fit: BoxFit.cover,
+                    width: double.infinity,
+                  );
+                },
+              ),
             ),
           ),
         ),
