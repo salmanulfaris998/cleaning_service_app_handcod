@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class AppColors {
   // Primary Theme Colors
-  static const Color primary = Color(0xFF69C46D); // fresh green
+  static const Color primary = Color(0xff4FB15E); // fresh green
   static const Color primaryLight = Color(0xFFE6F4E7);
   static const Color accent = Color(0xFF4CAF50);
 
@@ -27,4 +27,5 @@ class AppColors {
   // Others
   static const Color greyBackground = Color(0xFFF1F3F4);
   static const Color shadow = Color(0x1A000000); // light shadow
+  static const Color primaryShadow = Color(0x334FB15E); // soft green glow
 }

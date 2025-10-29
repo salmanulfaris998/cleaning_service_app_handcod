@@ -5,6 +5,7 @@ import 'package:hancod_machine_test/features/auth/presentation/widgets/otp_field
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../core/constants/app_texts.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/custom_textfield.dart';
 import '../controllers/phone_auth_controller.dart';
@@ -37,7 +38,7 @@ class PhoneOtpScreen extends ConsumerWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: GoRouter.of(context).pop,
         ),
-        title: const Text('Phone Verification', style: AppTextStyles.heading2),
+        title: const Text(AppTexts.phoneVerificationTitle, style: AppTextStyles.heading2),
         backgroundColor: AppColors.background,
         elevation: 0,
         centerTitle: true,
@@ -48,15 +49,9 @@ class PhoneOtpScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Enter your phone number',
-                style: AppTextStyles.heading1,
-              ),
+              const Text(AppTexts.phoneNumberPrompt, style: AppTextStyles.heading1),
               const SizedBox(height: 8),
-              const Text(
-                'We will send you a one-time password (OTP) to verify your number.',
-                style: AppTextStyles.bodyLight,
-              ),
+              const Text(AppTexts.phoneNumberSubtitle, style: AppTextStyles.bodyLight),
               const SizedBox(height: 32),
               Row(
                 children: [
@@ -91,7 +86,7 @@ class PhoneOtpScreen extends ConsumerWidget {
                   Expanded(
                     child: CustomTextField(
                       controller: phoneController,
-                      hintText: 'Phone number',
+                      hintText: AppTexts.phoneNumberHint,
                       keyboardType: TextInputType.phone,
                       textInputAction: TextInputAction.done,
                     ),
@@ -100,7 +95,7 @@ class PhoneOtpScreen extends ConsumerWidget {
               ),
               if (phoneState.otpRequested) ...[
                 const SizedBox(height: 24),
-                const Text('Enter your OTP', style: AppTextStyles.heading2),
+                const Text(AppTexts.enterOtpTitle, style: AppTextStyles.heading2),
                 const SizedBox(height: 12),
                 OtpFields(
                   controllers: otpControllers,
@@ -129,13 +124,13 @@ class PhoneOtpScreen extends ConsumerWidget {
                       }
                       otpFocusNodes.first.requestFocus();
                     },
-                    child: const Text('Resend OTP'),
+                    child: const Text(AppTexts.resendOtp),
                   ),
                 ),
               ],
               const Spacer(),
               CustomButton(
-                label: phoneState.otpRequested ? 'Login' : 'Get OTP',
+                label: phoneState.otpRequested ? AppTexts.login : AppTexts.getOtp,
                 backgroundColor: AppColors.primary,
                 textStyle: AppTextStyles.button,
                 onPressed: () {

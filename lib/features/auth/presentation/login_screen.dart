@@ -3,6 +3,8 @@ import 'package:go_router/go_router.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_text_styles.dart';
+import '../../../core/constants/app_images.dart';
+import '../../../core/constants/app_texts.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../routes/app_routes.dart';
 import 'widgets/logo_placeholder.dart';
@@ -24,12 +26,12 @@ class LoginScreen extends StatelessWidget {
 
               const SizedBox(height: 140),
               CustomButton(
-                label: 'Continue with Google',
+                label: AppTexts.loginContinueWithGoogle,
                 backgroundColor: Colors.grey.shade300,
                 borderColor: AppColors.border,
                 textStyle: AppTextStyles.buttonDark,
                 icon: Image.asset(
-                  'asset/icons/google.png',
+                  AppImages.googleIcon,
                   height: 24,
                   width: 24,
                 ),
@@ -37,7 +39,7 @@ class LoginScreen extends StatelessWidget {
               ),
               const SizedBox(height: 16),
               CustomButton(
-                label: 'Phone',
+                label: AppTexts.loginContinueWithPhone,
                 backgroundColor: AppColors.primary,
                 textStyle: AppTextStyles.button,
                 onPressed: () => context.push(AppRoutes.phoneAuth),
