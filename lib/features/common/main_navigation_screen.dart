@@ -15,7 +15,6 @@ class MainNavigationScreen extends ConsumerWidget {
   final Widget child;
 
   static const List<String> _tabs = ['/home', '/bookings', '/account'];
-  static const List<String> _titles = ['Home', 'Bookings', 'Account'];
 
   int _indexForLocation(String location) {
     for (var i = 0; i < _tabs.length; i++) {
@@ -37,14 +36,7 @@ class MainNavigationScreen extends ConsumerWidget {
 
     return Scaffold(
       backgroundColor: AppColors.background,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        title: Text(_titles[currentIndex], style: AppTextStyles.heading2),
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        centerTitle: true,
-      ),
-      body: child,
+      body: SafeArea(child: child),
       bottomNavigationBar: const _CustomBottomNavBar(),
     );
   }
