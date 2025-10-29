@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:hancod_machine_test/features/home/widgets/cart_button.dart';
 
-import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_images.dart';
+import '../../core/constants/app_texts.dart';
 import '../../core/constants/app_spacing.dart';
 import '../../core/widgets/location_select_bar.dart';
 import '../../core/widgets/search_bar_field.dart';
+import '../../core/widgets/available_services_section.dart';
 import 'widgets/service_banner_carousel.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -39,6 +40,24 @@ class HomeScreen extends StatelessWidget {
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 18),
           child: SearchBarField(),
+        ),
+        const SizedBox(height: AppSpacing.lg),
+        AvailableServicesSection(
+          services: const [
+            AvailableService(
+              name: AppTexts.serviceHomeCleaning,
+              iconPath: AppImages.cleaningService,
+            ),
+            AvailableService(
+              name: AppTexts.servicePlumbing,
+              iconPath: AppImages.plumbingService,
+            ),
+            AvailableService(
+              name: AppTexts.serviceWasteDisposal,
+              iconPath: AppImages.wasteDisposalService,
+            ),
+          ],
+          onSeeAll: () {},
         ),
         const SizedBox(height: AppSpacing.xl),
         const Expanded(child: SizedBox()),

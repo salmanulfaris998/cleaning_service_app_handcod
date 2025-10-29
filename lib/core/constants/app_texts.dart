@@ -24,12 +24,19 @@ class AppTexts {
 
   // Home
   static const String homeWelcome = 'Welcome to Hancod Commerce!';
-  static const String homeSubtitle = 'Explore services and manage your account.';
+  static const String homeSubtitle =
+      'Explore services and manage your account.';
   static const String searchPlaceholder = 'Search for a service';
+  static const String availableServicesTitle = 'Available Services';
+  static const String seeAll = 'See All';
+  static const String serviceHomeCleaning = 'Cleaning';
+  static const String servicePlumbing = 'Plumbing';
+  static const String serviceWasteDisposal = 'Waste Disposal';
 
   // Bookings
   static const String bookingsTitle = 'Your Bookings';
-  static const String bookingsSubtitle = 'Track and manage your service bookings here.';
+  static const String bookingsSubtitle =
+      'Track and manage your service bookings here.';
 
   // Account
   static const String accountTitle = 'My Account';
