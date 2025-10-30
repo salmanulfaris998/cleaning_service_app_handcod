@@ -8,8 +8,14 @@ import '../../../../core/constants/app_texts.dart';
 import '../../data/models/cart_model.dart';
 
 class BillDetailsCard extends StatelessWidget {
-  const BillDetailsCard({super.key, required this.items, required this.total});
+  const BillDetailsCard({
+    super.key,
+    required this.products,
+    required this.items,
+    required this.total,
+  });
 
+  final List<CartItem> products;
   final List<BillItem> items;
   final double total;
 
@@ -63,6 +69,41 @@ class BillDetailsCard extends StatelessWidget {
             padding: const EdgeInsets.only(top: 8),
             child: Column(
               children: [
+                if (products.isNotEmpty) ...[
+                  ...products.map((product) {
+                    final productTotal = product.price * product.quantity;
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 6),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              product.quantity > 1
+                                  ? '${product.name} (x${product.quantity})'
+                                  : product.name,
+                              style: AppTextStyles.body.copyWith(
+                                color: AppColors.textSecondary,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                          Text(
+                            '₹${productTotal.toStringAsFixed(0)}',
+                            style: AppTextStyles.body.copyWith(
+                              color: AppColors.textSecondary,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                  const SizedBox(height: AppSpacing.sm),
+                  const _DottedDivider(),
+                  const SizedBox(height: AppSpacing.sm),
+                ],
                 ...items.map((item) {
                   final isDiscount = item.isDiscount;
                   return Padding(

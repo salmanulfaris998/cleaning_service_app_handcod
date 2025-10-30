@@ -22,6 +22,17 @@ class AppImages {
       'assets/icons/waste_disposal_srvice.png';
   static const String seeAllServices = 'assets/icons/see all_services.png';
   static const String bookingPage = 'assets/icons/booking page.png';
+  static const String emptyCart = 'assets/icons/add cart.png';
+
+  // Account icons
+  static const String accountEditProfile = 'assets/icons/edit profile.png';
+  static const String accountSavedAddress = 'assets/icons/location.png';
+  static const String accountTermsConditions = 'assets/icons/contitions.png';
+  static const String accountPrivacy = 'assets/icons/contitions.png';
+  static const String accountReferFriend = 'assets/icons/refer.png';
+  static const String accountCustomerSupport =
+      'assets/icons/customer support.jpg';
+  static const String accountLogout = 'assets/icons/logout.png';
 
   // Service images
   static const String serviceHomeCleaning =

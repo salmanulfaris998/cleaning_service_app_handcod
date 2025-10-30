@@ -1,29 +1,29 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hancod_machine_test/features/cart/presentation/widgets/cart_product_card.dart';
-import 'package:hancod_machine_test/features/cart/presentation/widgets/coupon_code_field.dart';
-import 'package:hancod_machine_test/features/cart/presentation/widgets/quantity_control.dart';
-import 'package:hancod_machine_test/features/cart/presentation/widgets/wallet_balance_info.dart';
-import 'package:hancod_machine_test/features/cart/presentation/widgets/bill_details_card.dart';
-import 'package:hancod_machine_test/features/common/cart_summary_bar.dart';
 
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../core/constants/app_texts.dart';
 import '../../../routes/app_routes.dart';
-import '../controller/cart_controller.dart';
 import '../../cleaning_services/controller/service_controller.dart';
+import '../../common/cart_summary_bar.dart';
+import '../controller/cart_controller.dart';
 import '../data/models/cart_model.dart';
+import '../presentation/widgets/bill_details_card.dart';
+import '../presentation/widgets/cart_product_card.dart';
+import '../presentation/widgets/coupon_code_field.dart';
+import '../presentation/widgets/quantity_control.dart';
+import '../presentation/widgets/wallet_balance_info.dart';
 
-final _couponControllerProvider = Provider.autoDispose<TextEditingController>((
-  ref,
-) {
-  final controller = TextEditingController();
-  ref.onDispose(controller.dispose);
-  return controller;
-});
+final _couponControllerProvider = Provider.autoDispose<TextEditingController>(
+  (ref) {
+    final controller = TextEditingController();
+    ref.onDispose(controller.dispose);
+    return controller;
+  },
+);
 
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
@@ -40,11 +40,10 @@ class CartScreen extends ConsumerWidget {
       walletLabel: AppTexts.cartWalletAppliedLabel,
     );
     final billTotal = summary.total;
-    final frequentlyAddedServices =
-        cleaningServicesByCategory.values
-            .expand((services) => services)
-            .toList()
-          ..sort((a, b) => b.orders.compareTo(a.orders));
+    final frequentlyAddedServices = cleaningServicesByCategory.values
+        .expand((services) => services)
+        .toList()
+      ..sort((a, b) => b.orders.compareTo(a.orders));
 
     void handleApplyCoupon() {
       FocusScope.of(context).unfocus();
@@ -56,9 +55,9 @@ class CartScreen extends ConsumerWidget {
         return;
       }
 
-      ScaffoldMessenger.of(
-        context,
-      ).showSnackBar(SnackBar(content: Text('Applied coupon: $code')));
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Applied coupon: $code')),
+      );
     }
 
     void handleBack() {
@@ -68,6 +67,10 @@ class CartScreen extends ConsumerWidget {
       } else {
         context.go(AppRoutes.home);
       }
+    }
+
+    void handleVisitServices() {
+      context.push(AppRoutes.services);
     }
 
     Widget buildFrequentlyAddedSection() {
@@ -151,30 +154,30 @@ class CartScreen extends ConsumerWidget {
       body: Padding(
         padding: const EdgeInsets.all(AppSpacing.lg),
         child: cartState.isEmpty
-            ? ListView(
+            ? Column(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const SizedBox(height: AppSpacing.xl),
-                  Text('Your cart is empty', style: AppTextStyles.heading2),
-                  const SizedBox(height: AppSpacing.sm),
-                  Text(
-                    'Add services to see them listed here.',
-                    style: AppTextStyles.bodyLight,
-                  ),
-                  buildFrequentlyAddedSection(),
-                  const SizedBox(height: AppSpacing.xl),
-                  CouponCodeField(
-                    controller: couponController,
-                    onApply: handleApplyCoupon,
-                  ),
-                  if (!cartState.isEmpty) ...[
-                    const SizedBox(height: AppSpacing.lg),
-                    WalletBalanceInfo(
-                      walletBalance: CartController.walletBalance,
-                      redeemableAmount: summary.redeemableAmount,
+                  Expanded(
+                    child: ListView(
+                      children: [
+                        const SizedBox(height: AppSpacing.xl),
+                        Text(
+                          'Your cart is empty',
+                          style: AppTextStyles.heading2,
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: AppSpacing.sm),
+                        Text(
+                          'Add services to see them listed here.',
+                          style: AppTextStyles.bodyLight,
+                          textAlign: TextAlign.center,
+                        ),
+                        buildFrequentlyAddedSection(),
+                      ],
                     ),
-                    const SizedBox(height: AppSpacing.lg),
-                    BillDetailsCard(items: billItems, total: billTotal),
-                  ],
+                  ),
+                  const SizedBox(height: AppSpacing.lg),
+                  _EmptyCartVisitServices(onTap: handleVisitServices),
                 ],
               )
             : ListView(
@@ -221,7 +224,6 @@ class CartScreen extends ConsumerWidget {
 
                               const SizedBox(width: AppSpacing.md),
 
-                              // Price, vertically centered
                               Center(
                                 child: Text(
                                   '₹${itemTotal.toStringAsFixed(0)}',
@@ -258,36 +260,105 @@ class CartScreen extends ConsumerWidget {
                     controller: couponController,
                     onApply: handleApplyCoupon,
                   ),
-                  if (!cartState.isEmpty) ...[
-                    const SizedBox(height: AppSpacing.lg),
-                    WalletBalanceInfo(
-                      walletBalance: CartController.walletBalance,
-                      redeemableAmount: summary.redeemableAmount,
-                    ),
-                    const SizedBox(height: AppSpacing.xs),
-                    BillDetailsCard(items: billItems, total: billTotal),
-                  ],
+                  const SizedBox(height: AppSpacing.lg),
+                  WalletBalanceInfo(
+                    walletBalance: CartController.walletBalance,
+                    redeemableAmount: summary.redeemableAmount,
+                  ),
+                  const SizedBox(height: AppSpacing.xs),
+                  BillDetailsCard(
+                    products: cartState.items,
+                    items: billItems,
+                    total: billTotal,
+                  ),
                 ],
               ),
       ),
-      bottomNavigationBar: Padding(
-        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
-        child: CartSummaryBar(
-          totalLabel: AppTexts.cartGrandTotalLabel,
-          totalAmount: billTotal,
-          buttonLabel: AppTexts.cartBookSlotCta,
-          buttonGradient: const LinearGradient(
-            colors: [Color(0xFF6CCB73), Color(0xFF188B5A)],
-            begin: Alignment.topLeft,
-            end: Alignment.bottomRight,
-          ),
-          onPressed: () {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(
-                content: Text('Proceeding with total of ₹${billTotal.toStringAsFixed(0)}'),
+      bottomNavigationBar: cartState.isEmpty
+          ? const SizedBox.shrink()
+          : Padding(
+              padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+              child: CartSummaryBar(
+                totalLabel: AppTexts.cartGrandTotalLabel,
+                totalAmount: billTotal,
+                buttonLabel: AppTexts.cartBookSlotCta,
+                buttonGradient: const LinearGradient(
+                  colors: [Color(0xFF6CCB73), Color(0xFF188B5A)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+                onPressed: () {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(
+                        'Proceeding with total of ₹${billTotal.toStringAsFixed(0)}',
+                      ),
+                    ),
+                  );
+                },
               ),
-            );
-          },
+            ),
+    );
+  }
+}
+
+class _EmptyCartVisitServices extends StatelessWidget {
+  const _EmptyCartVisitServices({required this.onTap});
+
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Align(
+        alignment: Alignment.center,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+          Container(
+            padding: const EdgeInsets.all(AppSpacing.md),
+            decoration: BoxDecoration(
+              color: AppColors.cardBackground,
+              borderRadius: BorderRadius.circular(24),
+              boxShadow: const [
+                BoxShadow(
+                  color: AppColors.shadow,
+                  blurRadius: 12,
+                  offset: Offset(0, 6),
+                ),
+              ],
+            ),
+            child: Container(
+              height: 44,
+              width: 44,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(22),
+                gradient: const LinearGradient(
+                  colors: [Color(0xFF6CCB73), Color(0xFF3A9960)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: const Icon(
+                Icons.shopping_cart_outlined,
+                size: 26,
+                color: Colors.white,
+              ),
+            ),
+          ),
+          const SizedBox(height: AppSpacing.sm),
+          Text(
+            'Visit services and add to cart',
+            style: AppTextStyles.body.copyWith(
+              color: AppColors.textPrimary,
+              fontWeight: FontWeight.w500,
+            ),
+            textAlign: TextAlign.center,
+          ),
+          const SizedBox(height: AppSpacing.lg),
+          ],
         ),
       ),
     );

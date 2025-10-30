@@ -29,7 +29,7 @@ class CouponCodeField extends StatelessWidget {
           decoration: BoxDecoration(
             color: AppColors.cardBackground,
             borderRadius: BorderRadius.circular(16),
-            border: Border.all(color: AppColors.border.withOpacity(0.4)),
+            border: Border.all(color: const Color(0xFFE3E3E3), width: 1),
             boxShadow: [
               BoxShadow(
                 color: AppColors.shadow,
@@ -79,6 +79,8 @@ class CouponCodeField extends StatelessWidget {
                           borderRadius: BorderRadius.only(
                             topLeft: Radius.circular(12),
                             bottomLeft: Radius.circular(12),
+                            topRight: Radius.circular(12),
+                            bottomRight: Radius.circular(12),
                           ),
                           borderSide: BorderSide(
                             color: AppColors.primary,
@@ -142,15 +144,15 @@ class CouponCodeField extends StatelessWidget {
         ),
 
         Positioned(
-          top: -2,
+          top: -1,
           left: 0,
           child: Container(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
             decoration: BoxDecoration(
-              color: AppColors.primaryLight,
+              color: Color(0xFFEDEDED),
               borderRadius: const BorderRadius.only(
                 topLeft: Radius.circular(12),
-                topRight: Radius.circular(12),
+                topRight: Radius.circular(0),
               ),
             ),
             child: Text(

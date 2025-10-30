@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "41307269715",
+    "project_id": "neat-nest-5452c",
+    "storage_bucket": "neat-nest-5452c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:41307269715:android:bd5077e622e2d4a42a34a6",
+        "android_client_info": {
+          "package_name": "com.example.hancod_machine_test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "41307269715-281ah497jo44bdmtt7v2rm1q57ju8f2b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-Ocq8e27cb2oOVqAgQMtru1iqUglRVco"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "41307269715-281ah497jo44bdmtt7v2rm1q57ju8f2b.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

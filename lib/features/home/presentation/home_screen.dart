@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hancod_machine_test/features/cart/controller/cart_controller.dart';
 import 'package:hancod_machine_test/features/home/presentation/widgets/cart_button.dart';
 
 import '../../../core/constants/app_images.dart';
@@ -12,11 +14,14 @@ import '../../../core/widgets/cleaning_services_section.dart';
 import '../../../routes/app_routes.dart';
 import 'widgets/service_banner_carousel.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends ConsumerWidget {
   const HomeScreen({super.key});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cartCount =
+        ref.watch(cartControllerProvider.select((state) => state.totalItems));
+
     return SafeArea(
       child: SingleChildScrollView(
         child: Column(
@@ -37,7 +42,7 @@ class HomeScreen extends StatelessWidget {
                   ),
                   const SizedBox(width: AppSpacing.md),
                   CartButton(
-                    cartCount: 2,
+                    cartCount: cartCount,
                     onTap: () => context.go(AppRoutes.cart),
                   ),
                 ],
