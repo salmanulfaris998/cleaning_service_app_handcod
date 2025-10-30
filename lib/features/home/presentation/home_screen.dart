@@ -36,7 +36,10 @@ class HomeScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(width: AppSpacing.md),
-                  CartButton(cartCount: 2, onTap: () {}),
+                  CartButton(
+                    cartCount: 2,
+                    onTap: () => context.go(AppRoutes.cart),
+                  ),
                 ],
               ),
             ),

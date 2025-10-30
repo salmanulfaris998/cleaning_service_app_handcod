@@ -3,28 +3,23 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hancod_machine_test/core/constants/app_colors.dart';
 import 'package:hancod_machine_test/core/constants/app_spacing.dart';
+import 'package:hancod_machine_test/features/cart/controller/cart_controller.dart';
 import 'package:hancod_machine_test/features/common/cart_summary_bar.dart';
-import 'package:hancod_machine_test/features/services/controller/service_controller.dart';
-import 'package:hancod_machine_test/features/services/models/service_model.dart';
+import 'package:hancod_machine_test/features/cleaning_services/controller/service_controller.dart';
+import 'package:hancod_machine_test/features/cleaning_services/models/service_model.dart';
 import 'package:hancod_machine_test/routes/app_routes.dart';
-import 'package:hancod_machine_test/features/services/presentation/widgets/cleaning_services_header.dart';
-import 'package:hancod_machine_test/features/services/presentation/widgets/service_item_card.dart';
+import 'package:hancod_machine_test/features/cleaning_services/presentation/widgets/cleaning_services_header.dart';
+import 'package:hancod_machine_test/features/cleaning_services/presentation/widgets/service_item_card.dart';
 
 class ServiceListingScreen extends ConsumerWidget {
   const ServiceListingScreen({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final cartItems = ref.watch(cartProvider);
+    final cartState = ref.watch(cartControllerProvider);
     final selectedServices = ref.watch(servicesForSelectedCategoryProvider);
-    final totalPrice = cartItems.fold<double>(
-      0,
-      (sum, item) => sum + (item.price * item.quantity),
-    );
-    final totalItems = cartItems.fold<int>(
-      0,
-      (sum, item) => sum + item.quantity,
-    );
+    final totalPrice = cartState.subtotal;
+    final totalItems = cartState.totalItems;
 
     void handleBack() {
       final router = GoRouter.of(context);
@@ -116,9 +111,12 @@ class ServiceListingScreen extends ConsumerWidget {
                     AppSpacing.lg,
                   ),
                   child: CartSummaryBar(
-                    totalItems: totalItems,
-                    totalPrice: totalPrice,
-                    onViewCart: () {},
+                    totalLabel:
+                        '${totalItems} item${totalItems == 1 ? '' : 's'}',
+                    totalAmount: totalPrice,
+                    buttonLabel: 'VIEW CART',
+                    buttonColor: AppColors.cta,
+                    onPressed: () => context.go(AppRoutes.cart),
                   ),
                 ),
               ),

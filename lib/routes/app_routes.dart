@@ -4,10 +4,11 @@ import 'package:go_router/go_router.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/auth/presentation/phone_otp_screen.dart';
 import '../features/bookings/bookings_screen.dart';
+import '../features/cart/presentation/cart_screen.dart';
 import '../features/common/main_navigation_screen.dart';
 import '../features/home/presentation/home_screen.dart';
 import '../features/my_account/my_account_screen.dart';
-import '../features/services/presentation/service_listing_screen.dart';
+import '../features/cleaning_services/presentation/service_listing_screen.dart';
 
 class AppRoutes {
   AppRoutes._();
@@ -18,6 +19,7 @@ class AppRoutes {
   static const String account = '/account';
   static const String phoneAuth = '/auth/phone';
   static const String services = '/services';
+  static const String cart = '/cart';
 
   static final GoRouter router = GoRouter(
     initialLocation: login,
@@ -58,7 +60,13 @@ class AppRoutes {
       GoRoute(
         path: services,
         name: 'services',
-        pageBuilder: (context, state) => _fadeTransition(const ServiceListingScreen()),
+        pageBuilder: (context, state) =>
+            _fadeTransition(const ServiceListingScreen()),
+      ),
+      GoRoute(
+        path: cart,
+        name: 'cart',
+        pageBuilder: (context, state) => _fadeTransition(const CartScreen()),
       ),
     ],
   );

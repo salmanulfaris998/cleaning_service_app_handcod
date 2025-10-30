@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
-import 'package:hancod_machine_test/features/services/controller/service_controller.dart';
+import 'package:hancod_machine_test/features/cleaning_services/controller/service_controller.dart';
 
 class CleaningServicesHeader extends ConsumerWidget {
   const CleaningServicesHeader({super.key});
@@ -35,10 +35,7 @@ class CleaningServicesHeader extends ConsumerWidget {
                       ? const LinearGradient(
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
-                          colors: [
-                            Color(0xFF5FCD70),
-                            Color(0xFF0E826B),
-                          ],
+                          colors: [Color(0xFF5FCD70), Color(0xFF0E826B)],
                         )
                       : null,
                   color: isSelected ? null : Colors.transparent,
@@ -47,8 +44,7 @@ class CleaningServicesHeader extends ConsumerWidget {
                   cleaningCategories[index],
                   style: TextStyle(
                     fontSize: 16,
-                    fontWeight:
-                        isSelected ? FontWeight.w600 : FontWeight.w500,
+                    fontWeight: isSelected ? FontWeight.w600 : FontWeight.w500,
                     color: isSelected ? Colors.white : Colors.black,
                   ),
                 ),

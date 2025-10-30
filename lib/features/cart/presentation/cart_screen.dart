@@ -1,0 +1,295 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hancod_machine_test/features/cart/presentation/widgets/cart_product_card.dart';
+import 'package:hancod_machine_test/features/cart/presentation/widgets/coupon_code_field.dart';
+import 'package:hancod_machine_test/features/cart/presentation/widgets/quantity_control.dart';
+import 'package:hancod_machine_test/features/cart/presentation/widgets/wallet_balance_info.dart';
+import 'package:hancod_machine_test/features/cart/presentation/widgets/bill_details_card.dart';
+import 'package:hancod_machine_test/features/common/cart_summary_bar.dart';
+
+import '../../../core/constants/app_colors.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/constants/app_text_styles.dart';
+import '../../../core/constants/app_texts.dart';
+import '../../../routes/app_routes.dart';
+import '../controller/cart_controller.dart';
+import '../../cleaning_services/controller/service_controller.dart';
+import '../data/models/cart_model.dart';
+
+final _couponControllerProvider = Provider.autoDispose<TextEditingController>((
+  ref,
+) {
+  final controller = TextEditingController();
+  ref.onDispose(controller.dispose);
+  return controller;
+});
+
+class CartScreen extends ConsumerWidget {
+  const CartScreen({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final cartState = ref.watch(cartProvider);
+    final cartNotifier = ref.read(cartControllerProvider.notifier);
+    final summary = ref.watch(cartSummaryProvider);
+    final couponController = ref.watch(_couponControllerProvider);
+    final billItems = summary.buildBillItems(
+      subtotalLabel: AppTexts.cartSubtotalLabel,
+      serviceFeeLabel: AppTexts.cartServiceFeeLabel,
+      walletLabel: AppTexts.cartWalletAppliedLabel,
+    );
+    final billTotal = summary.total;
+    final frequentlyAddedServices =
+        cleaningServicesByCategory.values
+            .expand((services) => services)
+            .toList()
+          ..sort((a, b) => b.orders.compareTo(a.orders));
+
+    void handleApplyCoupon() {
+      FocusScope.of(context).unfocus();
+      final code = couponController.text.trim();
+      if (code.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Please enter a coupon code.')),
+        );
+        return;
+      }
+
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Applied coupon: $code')));
+    }
+
+    void handleBack() {
+      final router = GoRouter.of(context);
+      if (router.canPop()) {
+        router.pop();
+      } else {
+        context.go(AppRoutes.home);
+      }
+    }
+
+    Widget buildFrequentlyAddedSection() {
+      if (frequentlyAddedServices.isEmpty) {
+        return const SizedBox.shrink();
+      }
+
+      final topServices = frequentlyAddedServices.take(5).toList();
+
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox(height: AppSpacing.xl),
+          Text('Frequently added services', style: AppTextStyles.heading2),
+          const SizedBox(height: AppSpacing.md),
+          SizedBox(
+            height: 210,
+            child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              padding: EdgeInsets.zero,
+              itemCount: topServices.length,
+              itemBuilder: (context, index) {
+                final service = topServices[index];
+                return CartProductCard(
+                  image: service.imageUrl,
+                  title: service.name,
+                  price: service.price,
+                  onAdd: () => cartNotifier.addItem(
+                    CartItem(
+                      id: service.id,
+                      name: service.name,
+                      price: service.price,
+                      quantity: 1,
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      );
+    }
+
+    return Scaffold(
+      backgroundColor: AppColors.background,
+      appBar: AppBar(
+        backgroundColor: AppColors.background,
+        elevation: 0,
+        automaticallyImplyLeading: false,
+        titleSpacing: 0,
+        title: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+          child: Row(
+            children: [
+              InkWell(
+                borderRadius: BorderRadius.circular(12),
+                onTap: handleBack,
+                child: Container(
+                  height: 40,
+                  width: 40,
+                  decoration: BoxDecoration(
+                    color: const Color(0xFFF2F2F2),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: const Icon(Icons.arrow_back_ios_new, size: 18),
+                ),
+              ),
+              const SizedBox(width: 16),
+              const Text(
+                'Cart',
+                style: TextStyle(
+                  fontSize: 20,
+                  fontWeight: FontWeight.w600,
+                  color: AppColors.textPrimary,
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+      body: Padding(
+        padding: const EdgeInsets.all(AppSpacing.lg),
+        child: cartState.isEmpty
+            ? ListView(
+                children: [
+                  const SizedBox(height: AppSpacing.xl),
+                  Text('Your cart is empty', style: AppTextStyles.heading2),
+                  const SizedBox(height: AppSpacing.sm),
+                  Text(
+                    'Add services to see them listed here.',
+                    style: AppTextStyles.bodyLight,
+                  ),
+                  buildFrequentlyAddedSection(),
+                  const SizedBox(height: AppSpacing.xl),
+                  CouponCodeField(
+                    controller: couponController,
+                    onApply: handleApplyCoupon,
+                  ),
+                  if (!cartState.isEmpty) ...[
+                    const SizedBox(height: AppSpacing.lg),
+                    WalletBalanceInfo(
+                      walletBalance: CartController.walletBalance,
+                      redeemableAmount: summary.redeemableAmount,
+                    ),
+                    const SizedBox(height: AppSpacing.lg),
+                    BillDetailsCard(items: billItems, total: billTotal),
+                  ],
+                ],
+              )
+            : ListView(
+                children: [
+                  ...List.generate(cartState.items.length, (index) {
+                    final item = cartState.items[index];
+                    final itemTotal = item.price * item.quantity;
+
+                    return Padding(
+                      padding: EdgeInsets.only(
+                        bottom: index == cartState.items.length - 1
+                            ? 0
+                            : AppSpacing.lg,
+                      ),
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              '${index + 1}.  ${item.name}',
+                              style: AppTextStyles.body.copyWith(
+                                fontSize: 16,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              SizedBox(
+                                height: 40,
+                                child: Center(
+                                  child: QuantityControl(
+                                    quantity: item.quantity,
+                                    onDecrease: () =>
+                                        cartNotifier.decrementItem(item.id),
+                                    onIncrease: () =>
+                                        cartNotifier.incrementItem(item.id),
+                                  ),
+                                ),
+                              ),
+
+                              const SizedBox(width: AppSpacing.md),
+
+                              // Price, vertically centered
+                              Center(
+                                child: Text(
+                                  '₹${itemTotal.toStringAsFixed(0)}',
+                                  style: AppTextStyles.price.copyWith(
+                                    fontWeight: FontWeight.w600,
+                                  ),
+                                ),
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                    );
+                  }),
+                  Padding(
+                    padding: const EdgeInsets.only(top: 8, bottom: 12),
+                    child: GestureDetector(
+                      onTap: () => context.push(AppRoutes.services),
+                      child: Text(
+                        AppTexts.cartAddMoreServices,
+                        textAlign: TextAlign.left,
+                        style: AppTextStyles.greenHighlight.copyWith(
+                          decoration: TextDecoration.none,
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                          color: AppColors.primary,
+                        ),
+                      ),
+                    ),
+                  ),
+                  buildFrequentlyAddedSection(),
+                  const SizedBox(height: AppSpacing.xl),
+                  CouponCodeField(
+                    controller: couponController,
+                    onApply: handleApplyCoupon,
+                  ),
+                  if (!cartState.isEmpty) ...[
+                    const SizedBox(height: AppSpacing.lg),
+                    WalletBalanceInfo(
+                      walletBalance: CartController.walletBalance,
+                      redeemableAmount: summary.redeemableAmount,
+                    ),
+                    const SizedBox(height: AppSpacing.xs),
+                    BillDetailsCard(items: billItems, total: billTotal),
+                  ],
+                ],
+              ),
+      ),
+      bottomNavigationBar: Padding(
+        padding: const EdgeInsets.fromLTRB(16, 0, 16, 24),
+        child: CartSummaryBar(
+          totalLabel: AppTexts.cartGrandTotalLabel,
+          totalAmount: billTotal,
+          buttonLabel: AppTexts.cartBookSlotCta,
+          buttonGradient: const LinearGradient(
+            colors: [Color(0xFF6CCB73), Color(0xFF188B5A)],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
+          ),
+          onPressed: () {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Proceeding with total of ₹${billTotal.toStringAsFixed(0)}'),
+              ),
+            );
+          },
+        ),
+      ),
+    );
+  }
+}

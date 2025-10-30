@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:hancod_machine_test/core/constants/app_colors.dart';
 import 'package:hancod_machine_test/core/constants/app_text_styles.dart';
-import 'package:hancod_machine_test/features/services/controller/service_controller.dart';
-import 'package:hancod_machine_test/features/services/models/cart_item.dart';
-import 'package:hancod_machine_test/features/services/models/service_model.dart';
+import 'package:hancod_machine_test/features/cart/controller/cart_controller.dart';
+import 'package:hancod_machine_test/features/cart/data/models/cart_model.dart';
+import 'package:hancod_machine_test/features/cleaning_services/models/service_model.dart';
 
 class ServiceCard extends ConsumerWidget {
   const ServiceCard({super.key, required this.service});
@@ -13,10 +13,9 @@ class ServiceCard extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
-    final cartItems = ref.watch(cartProvider);
-    final cartNotifier = ref.read(cartProvider.notifier);
-    final itemIndex = cartItems.indexWhere((item) => item.id == service.id);
-    final quantity = itemIndex >= 0 ? cartItems[itemIndex].quantity : 0;
+    final cartState = ref.watch(cartControllerProvider);
+    final cartNotifier = ref.read(cartControllerProvider.notifier);
+    final quantity = cartState.itemById(service.id)?.quantity ?? 0;
 
     return Container(
       margin: const EdgeInsets.symmetric(vertical: 8),

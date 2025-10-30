@@ -42,6 +42,16 @@ class AppTexts {
   static const String bookingsSubtitle = 'Coming soon...';
   static const String bookingsComingSoon = 'Coming soon...';
 
+  // Cart
+  static const String cartAddMoreServices = 'Add more Services';
+  static const String cartBillDetailsTitle = 'Bill Details';
+  static const String cartTotalLabel = 'Total';
+  static const String cartSubtotalLabel = 'Subtotal';
+  static const String cartWalletAppliedLabel = 'Coupon Code';
+  static const String cartServiceFeeLabel = 'Taxes and Fees';
+  static const String cartGrandTotalLabel = 'Grand Total';
+  static const String cartBookSlotCta = 'Book Slot';
+
   // Account
   static const String accountTitle = 'My Account';
   static const String accountSubtitle =
