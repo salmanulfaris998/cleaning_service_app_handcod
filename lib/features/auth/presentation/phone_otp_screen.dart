@@ -38,7 +38,10 @@ class PhoneOtpScreen extends ConsumerWidget {
           icon: const Icon(Icons.arrow_back),
           onPressed: GoRouter.of(context).pop,
         ),
-        title: const Text(AppTexts.phoneVerificationTitle, style: AppTextStyles.heading2),
+        title: const Text(
+          AppTexts.phoneVerificationTitle,
+          style: AppTextStyles.heading2,
+        ),
         backgroundColor: AppColors.background,
         elevation: 0,
         centerTitle: true,
@@ -49,9 +52,15 @@ class PhoneOtpScreen extends ConsumerWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(AppTexts.phoneNumberPrompt, style: AppTextStyles.heading1),
+              const Text(
+                AppTexts.phoneNumberPrompt,
+                style: AppTextStyles.heading1,
+              ),
               const SizedBox(height: 8),
-              const Text(AppTexts.phoneNumberSubtitle, style: AppTextStyles.bodyLight),
+              const Text(
+                AppTexts.phoneNumberSubtitle,
+                style: AppTextStyles.bodyLight,
+              ),
               const SizedBox(height: 32),
               Row(
                 children: [
@@ -95,7 +104,10 @@ class PhoneOtpScreen extends ConsumerWidget {
               ),
               if (phoneState.otpRequested) ...[
                 const SizedBox(height: 24),
-                const Text(AppTexts.enterOtpTitle, style: AppTextStyles.heading2),
+                const Text(
+                  AppTexts.enterOtpTitle,
+                  style: AppTextStyles.heading2,
+                ),
                 const SizedBox(height: 12),
                 OtpFields(
                   controllers: otpControllers,
@@ -130,7 +142,9 @@ class PhoneOtpScreen extends ConsumerWidget {
               ],
               const Spacer(),
               CustomButton(
-                label: phoneState.otpRequested ? AppTexts.login : AppTexts.getOtp,
+                label: phoneState.otpRequested
+                    ? AppTexts.login
+                    : AppTexts.getOtp,
                 backgroundColor: AppColors.primary,
                 textStyle: AppTextStyles.button,
                 onPressed: () {

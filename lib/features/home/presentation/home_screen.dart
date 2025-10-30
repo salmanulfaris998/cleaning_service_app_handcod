@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:hancod_machine_test/features/home/widgets/cart_button.dart';
+import 'package:go_router/go_router.dart';
+import 'package:hancod_machine_test/features/home/presentation/widgets/cart_button.dart';
 
-import '../../core/constants/app_images.dart';
-import '../../core/constants/app_texts.dart';
-import '../../core/constants/app_spacing.dart';
-import '../../core/widgets/location_select_bar.dart';
-import '../../core/widgets/search_bar_field.dart';
-import '../../core/widgets/available_services_section.dart';
-import '../../core/widgets/cleaning_services_section.dart';
+import '../../../core/constants/app_images.dart';
+import '../../../core/constants/app_texts.dart';
+import '../../../core/constants/app_spacing.dart';
+import '../../../core/widgets/location_select_bar.dart';
+import '../../../core/widgets/search_bar_field.dart';
+import '../../../core/widgets/available_services_section.dart';
+import '../../../core/widgets/cleaning_services_section.dart';
+import '../../../routes/app_routes.dart';
 import 'widgets/service_banner_carousel.dart';
 
 class HomeScreen extends StatelessWidget {
@@ -63,7 +65,7 @@ class HomeScreen extends StatelessWidget {
                   iconPath: AppImages.wasteDisposalService,
                 ),
               ],
-              onSeeAll: () {},
+              onSeeAll: () => context.go(AppRoutes.services),
             ),
             const SizedBox(height: AppSpacing.xl),
             CleaningServicesSection(
@@ -81,7 +83,7 @@ class HomeScreen extends StatelessWidget {
                   imagePath: AppImages.serviceSofaCleaning,
                 ),
               ],
-              onSeeAll: () {},
+              onSeeAll: () => context.go(AppRoutes.services),
             ),
             const SizedBox(height: AppSpacing.xl),
             const SizedBox(height: 100), // Extra space for bottom navigation

@@ -3,8 +3,8 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_images.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_images.dart';
 
 // Simple state provider for current page index
 final currentPageProvider = StateProvider<int>((ref) => 0);
@@ -13,7 +13,8 @@ class ServiceBannerCarousel extends ConsumerStatefulWidget {
   const ServiceBannerCarousel({super.key});
 
   @override
-  ConsumerState<ServiceBannerCarousel> createState() => _ServiceBannerCarouselState();
+  ConsumerState<ServiceBannerCarousel> createState() =>
+      _ServiceBannerCarouselState();
 }
 
 class _ServiceBannerCarouselState extends ConsumerState<ServiceBannerCarousel> {
@@ -46,7 +47,7 @@ class _ServiceBannerCarouselState extends ConsumerState<ServiceBannerCarousel> {
   @override
   Widget build(BuildContext context) {
     final currentPage = ref.watch(currentPageProvider);
-    
+
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [

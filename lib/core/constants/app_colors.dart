@@ -23,6 +23,9 @@ class AppColors {
   static const Color success = Color(0xFF4CAF50);
   static const Color error = Color(0xFFE53935);
   static const Color warning = Color(0xFFFFB300);
+  static const Color cta = Color(0xFFFF6B47);
+  static const Color neutral = Color(0xFFE0E0E0);
+  static const Color quantityGreen = Color(0xFF3A9960);
 
   // Others
   static const Color greyBackground = Color(0xFFF1F3F4);

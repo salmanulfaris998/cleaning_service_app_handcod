@@ -7,7 +7,7 @@ import '../../core/constants/app_images.dart';
 import '../../core/constants/app_text_styles.dart';
 import '../../core/constants/app_texts.dart';
 import '../bookings/bookings_screen.dart';
-import '../home/home_screen.dart';
+import '../home/presentation/home_screen.dart';
 import '../my_account/my_account_screen.dart';
 
 final navIndexProvider = StateProvider<int>((ref) => 0);

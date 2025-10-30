@@ -5,8 +5,9 @@ import '../features/auth/presentation/login_screen.dart';
 import '../features/auth/presentation/phone_otp_screen.dart';
 import '../features/bookings/bookings_screen.dart';
 import '../features/common/main_navigation_screen.dart';
-import '../features/home/home_screen.dart';
+import '../features/home/presentation/home_screen.dart';
 import '../features/my_account/my_account_screen.dart';
+import '../features/services/presentation/service_listing_screen.dart';
 
 class AppRoutes {
   AppRoutes._();
@@ -16,6 +17,7 @@ class AppRoutes {
   static const String bookings = '/bookings';
   static const String account = '/account';
   static const String phoneAuth = '/auth/phone';
+  static const String services = '/services';
 
   static final GoRouter router = GoRouter(
     initialLocation: login,
@@ -52,6 +54,11 @@ class AppRoutes {
                 _fadeTransition(const MyAccountScreen()),
           ),
         ],
+      ),
+      GoRoute(
+        path: services,
+        name: 'services',
+        pageBuilder: (context, state) => _fadeTransition(const ServiceListingScreen()),
       ),
     ],
   );

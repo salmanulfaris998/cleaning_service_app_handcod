@@ -7,6 +7,7 @@ class CustomButton extends StatelessWidget {
     required this.textStyle,
     this.borderColor,
     this.icon,
+    this.trailingIcon,
     this.onPressed = _noop,
     super.key,
   });
@@ -16,6 +17,7 @@ class CustomButton extends StatelessWidget {
   final Color? borderColor;
   final TextStyle textStyle;
   final Widget? icon;
+  final Widget? trailingIcon;
   final VoidCallback onPressed;
 
   static void _noop() {}
@@ -46,6 +48,10 @@ class CustomButton extends StatelessWidget {
               const SizedBox(width: 12),
             ],
             Text(label, style: textStyle),
+            if (trailingIcon != null) ...[
+              const SizedBox(width: 12),
+              trailingIcon!,
+            ],
           ],
         ),
       ),
