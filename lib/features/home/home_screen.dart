@@ -15,73 +15,78 @@ class HomeScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18, vertical: AppSpacing.md),
-          child: Row(
-            children: [
-              Expanded(
-                child: LocationSelectBar(
-                  location: '406, Skyline Park Dale, MM Road',
-                  onLocationTap: () {},
-                ),
+    return SafeArea(
+      child: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.symmetric(
+                horizontal: 18,
+                vertical: AppSpacing.md,
               ),
-              const SizedBox(width: AppSpacing.md),
-              CartButton(cartCount: 2, onTap: () {}),
-            ],
-          ),
-        ),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 18),
-          child: ServiceBannerCarousel(),
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        const Padding(
-          padding: EdgeInsets.symmetric(horizontal: 18),
-          child: SearchBarField(),
-        ),
-        const SizedBox(height: AppSpacing.lg),
-        AvailableServicesSection(
-          services: const [
-            AvailableService(
-              name: AppTexts.serviceHomeCleaning,
-              iconPath: AppImages.cleaningService,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: LocationSelectBar(
+                      location: '406, Skyline Park Dale, MM Road',
+                      onLocationTap: () {},
+                    ),
+                  ),
+                  const SizedBox(width: AppSpacing.md),
+                  CartButton(cartCount: 2, onTap: () {}),
+                ],
+              ),
             ),
-            AvailableService(
-              name: AppTexts.servicePlumbing,
-              iconPath: AppImages.plumbingService,
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 18),
+              child: ServiceBannerCarousel(),
             ),
-            AvailableService(
-              name: AppTexts.serviceWasteDisposal,
-              iconPath: AppImages.wasteDisposalService,
+            const SizedBox(height: AppSpacing.lg),
+            const Padding(
+              padding: EdgeInsets.symmetric(horizontal: 18),
+              child: SearchBarField(),
             ),
+            const SizedBox(height: AppSpacing.lg),
+            AvailableServicesSection(
+              services: const [
+                AvailableService(
+                  name: AppTexts.serviceHomeCleaning,
+                  iconPath: AppImages.cleaningService,
+                ),
+                AvailableService(
+                  name: AppTexts.servicePlumbing,
+                  iconPath: AppImages.plumbingService,
+                ),
+                AvailableService(
+                  name: AppTexts.serviceWasteDisposal,
+                  iconPath: AppImages.wasteDisposalService,
+                ),
+              ],
+              onSeeAll: () {},
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            CleaningServicesSection(
+              services: const [
+                CleaningService(
+                  name: AppTexts.homeCleaningService,
+                  imagePath: AppImages.serviceHomeCleaning,
+                ),
+                CleaningService(
+                  name: AppTexts.carpetCleaningService,
+                  imagePath: AppImages.serviceCarpetCleaning,
+                ),
+                CleaningService(
+                  name: AppTexts.sofaCleaningService,
+                  imagePath: AppImages.serviceSofaCleaning,
+                ),
+              ],
+              onSeeAll: () {},
+            ),
+            const SizedBox(height: AppSpacing.xl),
+            const SizedBox(height: 100), // Extra space for bottom navigation
           ],
-          onSeeAll: () {},
         ),
-        const SizedBox(height: AppSpacing.xl),
-        CleaningServicesSection(
-          services: const [
-            CleaningService(
-              name: AppTexts.homeCleaningService,
-              imagePath: AppImages.serviceHomeCleaning,
-            ),
-            CleaningService(
-              name: AppTexts.carpetCleaningService,
-              imagePath: AppImages.serviceCarpetCleaning,
-            ),
-            CleaningService(
-              name: AppTexts.sofaCleaningService,
-              imagePath: AppImages.serviceSofaCleaning,
-            ),
-          ],
-          onSeeAll: () {},
-        ),
-        const SizedBox(height: AppSpacing.xl),
-        const SizedBox(height: 100), // Extra space for bottom navigation
-        ],
       ),
     );
   }

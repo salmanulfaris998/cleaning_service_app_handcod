@@ -39,8 +39,8 @@ class AppTexts {
 
   // Bookings
   static const String bookingsTitle = 'Your Bookings';
-  static const String bookingsSubtitle =
-      'Track and manage your service bookings here.';
+  static const String bookingsSubtitle = 'Coming soon...';
+  static const String bookingsComingSoon = 'Coming soon...';
 
   // Account
   static const String accountTitle = 'My Account';

@@ -6,44 +6,85 @@ import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_images.dart';
 import '../../core/constants/app_text_styles.dart';
 import '../../core/constants/app_texts.dart';
+import '../bookings/bookings_screen.dart';
+import '../home/home_screen.dart';
+import '../my_account/my_account_screen.dart';
 
 final navIndexProvider = StateProvider<int>((ref) => 0);
 
-class MainNavigationScreen extends ConsumerWidget {
-  const MainNavigationScreen({super.key, required this.child});
+class MainNavigationScreen extends ConsumerStatefulWidget {
+  const MainNavigationScreen({super.key, required Widget child});
 
-  final Widget child;
+  @override
+  ConsumerState<MainNavigationScreen> createState() =>
+      _MainNavigationScreenState();
+}
 
-  static const List<String> _tabs = ['/home', '/bookings', '/account'];
+class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
+  final List<Widget> _pages = const [
+    HomeScreen(),
+    BookingsScreen(),
+    MyAccountScreen(),
+  ];
 
-  int _indexForLocation(String location) {
-    for (var i = 0; i < _tabs.length; i++) {
-      if (location == _tabs[i] || location.startsWith(_tabs[i])) {
-        return i;
-      }
-    }
-    return 0;
+  final List<String> _labels = const [
+    AppTexts.navHome,
+    AppTexts.navBookings,
+    AppTexts.navAccount,
+  ];
+
+  final List<String> _iconPaths = const [
+    AppImages.navHome,
+    AppImages.navBooking,
+    AppImages.navAccount,
+  ];
+
+  final PageController _pageController = PageController();
+
+  void _onTabSelected(int index) {
+    ref.read(navIndexProvider.notifier).state = index;
+    _pageController.animateToPage(
+      index,
+      duration: const Duration(milliseconds: 350),
+      curve: Curves.easeInOut,
+    );
   }
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final location = GoRouterState.of(context).uri.toString();
-    final currentIndex = _indexForLocation(location);
-    final navController = ref.read(navIndexProvider.notifier);
-    if (navController.state != currentIndex) {
-      navController.state = currentIndex;
-    }
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final selectedIndex = ref.watch(navIndexProvider);
 
     return Scaffold(
       backgroundColor: AppColors.background,
       body: Stack(
         children: [
-          SafeArea(child: child),
+          // 🔹 Fade transition for tab switching
+          AnimatedSwitcher(
+            duration: const Duration(milliseconds: 400),
+            switchInCurve: Curves.easeIn,
+            switchOutCurve: Curves.easeOut,
+            transitionBuilder: (child, animation) =>
+                FadeTransition(opacity: animation, child: child),
+            child: _pages[selectedIndex],
+          ),
+
+          // 🔹 Custom Bottom Navigation Bar
           Positioned(
             left: 0,
             right: 0,
             bottom: 0,
-            child: const _CustomBottomNavBar(),
+            child: _CustomBottomNavBar(
+              selectedIndex: selectedIndex,
+              onTabSelected: _onTabSelected,
+              labels: _labels,
+              iconPaths: _iconPaths,
+            ),
           ),
         ],
       ),
@@ -51,63 +92,51 @@ class MainNavigationScreen extends ConsumerWidget {
   }
 }
 
-class _CustomBottomNavBar extends ConsumerWidget {
-  const _CustomBottomNavBar();
+class _CustomBottomNavBar extends StatelessWidget {
+  const _CustomBottomNavBar({
+    required this.selectedIndex,
+    required this.onTabSelected,
+    required this.labels,
+    required this.iconPaths,
+  });
 
-  static const List<String> _labels = [
-    AppTexts.navHome,
-    AppTexts.navBookings,
-    AppTexts.navAccount,
-  ];
-
-  static const List<String> _routes = ['/home', '/bookings', '/account'];
-
-  static const List<String> _iconPaths = [
-    AppImages.navHome,
-    AppImages.navBooking,
-    AppImages.navAccount,
-  ];
+  final int selectedIndex;
+  final Function(int) onTabSelected;
+  final List<String> labels;
+  final List<String> iconPaths;
 
   @override
-  Widget build(BuildContext context, WidgetRef ref) {
-    final selectedIndex = ref.watch(navIndexProvider);
-
+  Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.only(left: 20, right: 20, bottom: 20),
       padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
       decoration: BoxDecoration(
         color: AppColors.cardBackground,
         borderRadius: BorderRadius.circular(40),
-        boxShadow: const [
+        boxShadow: [
           BoxShadow(
-            color: AppColors.shadow,
-            blurRadius: 25,
-            offset: Offset(0, 10),
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
           ),
           BoxShadow(
             color: AppColors.primaryShadow,
-            blurRadius: 18,
-            offset: Offset(0, 6),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
           ),
         ],
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: List.generate(_iconPaths.length, (index) {
-          final bool isSelected = selectedIndex == index;
-
+        children: List.generate(iconPaths.length, (index) {
+          final isSelected = selectedIndex == index;
           return GestureDetector(
-            onTap: () {
-              if (selectedIndex != index) {
-                ref.read(navIndexProvider.notifier).state = index;
-                context.go(_routes[index]);
-              }
-            },
+            onTap: () => onTabSelected(index),
             child: AnimatedContainer(
               duration: const Duration(milliseconds: 250),
               curve: Curves.easeInOut,
-              height: 52,
-              padding: const EdgeInsets.symmetric(horizontal: 18, vertical: 10),
+              height: 50,
+              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
               decoration: BoxDecoration(
                 color: isSelected ? AppColors.primaryLight : Colors.transparent,
                 borderRadius: BorderRadius.circular(20),
@@ -117,27 +146,25 @@ class _CustomBottomNavBar extends ConsumerWidget {
               ),
               child: Row(
                 children: [
-                  if (isSelected)
-                    Image.asset(
-                      _iconPaths[index],
-                      height: index == 0 ? 40 : 24,
-                      width: index == 0 ? 40 : 24,
-                    )
-                  else
-                    ColorFiltered(
-                      colorFilter: const ColorFilter.mode(
-                        AppColors.textHint,
-                        BlendMode.srcIn,
-                      ),
-                      child: Image.asset(
-                        _iconPaths[index],
-                        height: index == 0 ? 32 : 24,
-                        width: index == 0 ? 32 : 24,
-                      ),
-                    ),
+                  Image.asset(
+                    iconPaths[index],
+                    height: index == 0
+                        ? 28
+                        : 24, // Larger size for home icon (index 0)
+                    width: index == 0
+                        ? 28
+                        : 24, // Larger size for home icon (index 0)
+                    color: isSelected ? null : AppColors.textHint,
+                  ),
                   if (isSelected) ...[
                     const SizedBox(width: 8),
-                    Text(_labels[index], style: AppTextStyles.buttonDark),
+                    Text(
+                      labels[index],
+                      style: AppTextStyles.button.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
                   ],
                 ],
               ),

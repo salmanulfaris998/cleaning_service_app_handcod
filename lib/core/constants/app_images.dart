@@ -21,6 +21,7 @@ class AppImages {
   static const String wasteDisposalService =
       'assets/icons/waste_disposal_srvice.png';
   static const String seeAllServices = 'assets/icons/see all_services.png';
+  static const String bookingPage = 'assets/icons/booking page.png';
 
   // Service images
   static const String serviceHomeCleaning =

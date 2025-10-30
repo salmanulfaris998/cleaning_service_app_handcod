@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
 import '../features/auth/presentation/login_screen.dart';
@@ -35,20 +36,38 @@ class AppRoutes {
           GoRoute(
             path: home,
             name: 'home',
-            builder: (context, state) => const HomeScreen(),
+            pageBuilder: (context, state) =>
+                _fadeTransition(const HomeScreen()),
           ),
           GoRoute(
             path: bookings,
             name: 'bookings',
-            builder: (context, state) => const BookingsScreen(),
+            pageBuilder: (context, state) =>
+                _fadeTransition(const BookingsScreen()),
           ),
           GoRoute(
             path: account,
             name: 'account',
-            builder: (context, state) => const MyAccountScreen(),
+            pageBuilder: (context, state) =>
+                _fadeTransition(const MyAccountScreen()),
           ),
         ],
       ),
     ],
   );
+
+  // 🔹 Fade Transition for all tab routes
+  static CustomTransitionPage _fadeTransition(Widget child) {
+    return CustomTransitionPage(
+      key: ValueKey(child.hashCode),
+      child: child,
+      transitionsBuilder: (context, animation, secondaryAnimation, child) {
+        return FadeTransition(
+          opacity: CurvedAnimation(parent: animation, curve: Curves.easeInOut),
+          child: child,
+        );
+      },
+      transitionDuration: const Duration(milliseconds: 300),
+    );
+  }
 }
