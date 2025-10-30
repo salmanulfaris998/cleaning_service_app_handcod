@@ -1,6 +1,8 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
+import '../core/widgets/safe_page_wrapper.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/auth/presentation/phone_otp_screen.dart';
 import '../features/bookings/bookings_screen.dart';
@@ -27,12 +29,18 @@ class AppRoutes {
       GoRoute(
         path: login,
         name: 'login',
-        builder: (context, state) => const LoginScreen(),
+        pageBuilder: (context, state) => CupertinoPage(
+          key: state.pageKey,
+          child: const SafePageWrapper(child: LoginScreen()),
+        ),
       ),
       GoRoute(
         path: phoneAuth,
         name: 'phoneAuth',
-        builder: (context, state) => const PhoneOtpScreen(),
+        pageBuilder: (context, state) => CupertinoPage(
+          key: state.pageKey,
+          child: const SafePageWrapper(child: PhoneOtpScreen()),
+        ),
       ),
       ShellRoute(
         builder: (context, state, child) => MainNavigationScreen(child: child),
@@ -41,32 +49,37 @@ class AppRoutes {
             path: home,
             name: 'home',
             pageBuilder: (context, state) =>
-                _fadeTransition(const HomeScreen()),
+                _fadeTransition(const SafePageWrapper(child: HomeScreen())),
           ),
           GoRoute(
             path: bookings,
             name: 'bookings',
             pageBuilder: (context, state) =>
-                _fadeTransition(const BookingsScreen()),
+                _fadeTransition(const SafePageWrapper(child: BookingsScreen())),
           ),
           GoRoute(
             path: account,
             name: 'account',
             pageBuilder: (context, state) =>
-                _fadeTransition(const MyAccountScreen()),
+                _fadeTransition(const SafePageWrapper(child: MyAccountScreen())),
           ),
         ],
       ),
       GoRoute(
         path: services,
         name: 'services',
-        pageBuilder: (context, state) =>
-            _fadeTransition(const ServiceListingScreen()),
+        pageBuilder: (context, state) => CupertinoPage(
+          key: state.pageKey,
+          child: const SafePageWrapper(child: ServiceListingScreen()),
+        ),
       ),
       GoRoute(
         path: cart,
         name: 'cart',
-        pageBuilder: (context, state) => _fadeTransition(const CartScreen()),
+        pageBuilder: (context, state) => CupertinoPage(
+          key: state.pageKey,
+          child: const SafePageWrapper(child: CartScreen()),
+        ),
       ),
     ],
   );

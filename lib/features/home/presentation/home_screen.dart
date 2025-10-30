@@ -43,7 +43,7 @@ class HomeScreen extends ConsumerWidget {
                   const SizedBox(width: AppSpacing.md),
                   CartButton(
                     cartCount: cartCount,
-                    onTap: () => context.go(AppRoutes.cart),
+                    onTap: () => context.push(AppRoutes.cart),
                   ),
                 ],
               ),

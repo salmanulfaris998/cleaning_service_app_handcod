@@ -35,35 +35,28 @@ class ServiceListingScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
-        automaticallyImplyLeading: false,
-        titleSpacing: 0,
-        title: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Row(
-            children: [
-              InkWell(
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 16),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: handleBack,
+            child: Container(
+              height: 40,
+              width: 40,
+              decoration: BoxDecoration(
+                color: const Color(0xFFF2F2F2),
                 borderRadius: BorderRadius.circular(12),
-                onTap: handleBack,
-                child: Container(
-                  height: 40,
-                  width: 40,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF2F2F2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(Icons.arrow_back_ios_new, size: 18),
-                ),
               ),
-              const SizedBox(width: 16),
-              const Text(
-                'Cleaning Services',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-            ],
+              child: const Icon(Icons.arrow_back_ios_new, size: 18),
+            ),
+          ),
+        ),
+        title: const Text(
+          'Cleaning Services',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
           ),
         ),
       ),
@@ -116,7 +109,7 @@ class ServiceListingScreen extends ConsumerWidget {
                     totalAmount: totalPrice,
                     buttonLabel: 'VIEW CART',
                     buttonColor: AppColors.cta,
-                    onPressed: () => context.go(AppRoutes.cart),
+                    onPressed: () => context.push(AppRoutes.cart),
                   ),
                 ),
               ),

@@ -29,6 +29,57 @@
             {
               "client_id": "41307269715-281ah497jo44bdmtt7v2rm1q57ju8f2b.apps.googleusercontent.com",
               "client_type": 3
+            },
+            {
+              "client_id": "41307269715-8gdmfhhvprcfi06032qmnkcjboofkr97.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.hancodMachineTest"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:41307269715:android:826fbb15e5a1403d2a34a6",
+        "android_client_info": {
+          "package_name": "com.neatnext"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "41307269715-dpmb6ltct1bb6urnj29dmub0dqlabah0.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.neatnext",
+            "certificate_hash": "407d411015d45b6c342a6f4f93f5693b34ef44fb"
+          }
+        },
+        {
+          "client_id": "41307269715-281ah497jo44bdmtt7v2rm1q57ju8f2b.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB-Ocq8e27cb2oOVqAgQMtru1iqUglRVco"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "41307269715-281ah497jo44bdmtt7v2rm1q57ju8f2b.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "41307269715-8gdmfhhvprcfi06032qmnkcjboofkr97.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.hancodMachineTest"
+              }
             }
           ]
         }

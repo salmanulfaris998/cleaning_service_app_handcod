@@ -1,19 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+
 import '../../../core/constants/app_colors.dart';
 import '../../../core/constants/app_images.dart';
 import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_text_styles.dart';
-import '../../../core/constants/app_texts.dart';
+import '../auth/controllers/auth_controller.dart';
 import 'presentation/widgets/account_option_tile.dart';
 import 'presentation/widgets/account_profile_card.dart';
 import 'presentation/widgets/account_profile_header_delegate.dart';
 import 'presentation/widgets/account_wallet_card.dart';
+import 'presentation/widgets/logout_dialog.dart';
 
-class MyAccountScreen extends StatelessWidget {
+class MyAccountScreen extends ConsumerWidget {
   const MyAccountScreen({super.key});
 
+  void _showLogoutDialog(BuildContext context, WidgetRef ref) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return const LogoutDialog();
+      },
+    );
+  }
+
+  String _getGreeting() {
+    final hour = DateTime.now().hour;
+    if (hour < 12) {
+      return 'Good Morning';
+    } else if (hour < 17) {
+      return 'Good Afternoon';
+    } else {
+      return 'Good Evening';
+    }
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(currentUserProvider);
+    final userName = user?.displayName ?? 
+                    (user?.email?.split('@')[0]) ?? 
+                    'User';
+    
     return Scaffold(
       backgroundColor: AppColors.background,
       body: SafeArea(
@@ -27,12 +56,27 @@ class MyAccountScreen extends StatelessWidget {
                 AppSpacing.md,
               ),
               sliver: SliverToBoxAdapter(
-                child: Text(
-                  AppTexts.accountTitle,
-                  style: AppTextStyles.heading2.copyWith(
-                    color: AppColors.textPrimary,
-                    fontWeight: FontWeight.w600,
-                  ),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      '${_getGreeting()},',
+                      style: AppTextStyles.heading2.copyWith(
+                        color: AppColors.textSecondary,
+                        fontWeight: FontWeight.w400,
+                        fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      userName,
+                      style: AppTextStyles.heading2.copyWith(
+                        color: AppColors.textPrimary,
+                        fontWeight: FontWeight.w600,
+                        fontSize: 24,
+                      ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -66,7 +110,7 @@ class MyAccountScreen extends StatelessWidget {
               ),
               sliver: SliverList(
                 delegate: SliverChildListDelegate(
-                  const [
+                  [
                     AccountOptionTile(
                       iconAsset: AppImages.accountEditProfile,
                       label: 'Edit Profile',
@@ -94,6 +138,7 @@ class MyAccountScreen extends StatelessWidget {
                     AccountOptionTile(
                       iconAsset: AppImages.accountLogout,
                       label: 'Log Out',
+                      onTap: () => _showLogoutDialog(context, ref),
                     ),
                     SizedBox(height: AppSpacing.xl),
                   ],

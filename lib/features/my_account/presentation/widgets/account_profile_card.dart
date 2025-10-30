@@ -1,14 +1,26 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/constants/app_spacing.dart';
 import '../../../../core/constants/app_text_styles.dart';
+import '../../../auth/controllers/auth_controller.dart';
 
-class AccountProfileCard extends StatelessWidget {
+class AccountProfileCard extends ConsumerWidget {
   const AccountProfileCard({super.key});
 
+  String _getInitials(String name) {
+    if (name.isEmpty) return 'U';
+    final words = name.split(' ');
+    if (words.length >= 2) {
+      return '${words[0][0]}${words[1][0]}'.toUpperCase();
+    }
+    return name[0].toUpperCase();
+  }
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final user = ref.watch(currentUserProvider);
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
@@ -39,13 +51,32 @@ class AccountProfileCard extends StatelessWidget {
               ),
             ),
             alignment: Alignment.center,
-            child: Text(
-              'FE',
-              style: AppTextStyles.heading2.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.w600,
-              ),
-            ),
+            child: user?.photoURL != null
+                ? ClipRRect(
+                    borderRadius: BorderRadius.circular(16),
+                    child: Image.network(
+                      user!.photoURL!,
+                      height: 56,
+                      width: 56,
+                      fit: BoxFit.cover,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Text(
+                          _getInitials(user.displayName ?? user.email ?? 'U'),
+                          style: AppTextStyles.heading2.copyWith(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        );
+                      },
+                    ),
+                  )
+                : Text(
+                    _getInitials(user?.displayName ?? user?.email ?? 'User'),
+                    style: AppTextStyles.heading2.copyWith(
+                      color: Colors.white,
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
           ),
           const SizedBox(width: AppSpacing.lg),
           Column(
@@ -53,7 +84,7 @@ class AccountProfileCard extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             children: [
               Text(
-                'Fathima Ebrahim',
+                user?.displayName ?? user?.email?.split('@')[0] ?? 'User',
                 style: AppTextStyles.body.copyWith(
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
@@ -62,7 +93,7 @@ class AccountProfileCard extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                '+91 908 786 4233',
+                user?.email ?? 'No email',
                 style: AppTextStyles.bodyLight.copyWith(
                   fontSize: 14,
                   color: AppColors.textSecondary,

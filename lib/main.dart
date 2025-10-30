@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -35,6 +36,12 @@ class HancodApp extends StatelessWidget {
           headlineMedium: AppTextStyles.heading2,
           bodyLarge: AppTextStyles.body,
           bodyMedium: AppTextStyles.bodyLight,
+        ),
+        pageTransitionsTheme: const PageTransitionsTheme(
+          builders: {
+            TargetPlatform.android: CupertinoPageTransitionsBuilder(),
+            TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
+          },
         ),
       ),
       routerDelegate: AppRoutes.router.routerDelegate,

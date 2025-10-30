@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
+import '../../core/widgets/safe_page_wrapper.dart';
+
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_images.dart';
 import '../../core/constants/app_text_styles.dart';
@@ -60,33 +62,35 @@ class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
   Widget build(BuildContext context) {
     final selectedIndex = ref.watch(navIndexProvider);
 
-    return Scaffold(
-      backgroundColor: AppColors.background,
-      body: Stack(
-        children: [
-          // 🔹 Fade transition for tab switching
-          AnimatedSwitcher(
-            duration: const Duration(milliseconds: 400),
-            switchInCurve: Curves.easeIn,
-            switchOutCurve: Curves.easeOut,
-            transitionBuilder: (child, animation) =>
-                FadeTransition(opacity: animation, child: child),
-            child: _pages[selectedIndex],
-          ),
-
-          // 🔹 Custom Bottom Navigation Bar
-          Positioned(
-            left: 0,
-            right: 0,
-            bottom: 0,
-            child: _CustomBottomNavBar(
-              selectedIndex: selectedIndex,
-              onTabSelected: _onTabSelected,
-              labels: _labels,
-              iconPaths: _iconPaths,
+    return SafePageWrapper(
+      child: Scaffold(
+        backgroundColor: AppColors.background,
+        body: Stack(
+          children: [
+            // 🔹 Fade transition for tab switching
+            AnimatedSwitcher(
+              duration: const Duration(milliseconds: 400),
+              switchInCurve: Curves.easeIn,
+              switchOutCurve: Curves.easeOut,
+              transitionBuilder: (child, animation) =>
+                  FadeTransition(opacity: animation, child: child),
+              child: _pages[selectedIndex],
             ),
-          ),
-        ],
+
+            // 🔹 Custom Bottom Navigation Bar
+            Positioned(
+              left: 0,
+              right: 0,
+              bottom: 0,
+              child: _CustomBottomNavBar(
+                selectedIndex: selectedIndex,
+                onTabSelected: _onTabSelected,
+                labels: _labels,
+                iconPaths: _iconPaths,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

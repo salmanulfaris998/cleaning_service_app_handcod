@@ -30,6 +30,19 @@ class CartScreen extends ConsumerWidget {
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
+    return PopScope(
+      canPop: false, // Prevent swipe-to-exit, use back button instead
+      onPopInvoked: (didPop) {
+        if (!didPop) {
+          // If user tries to swipe back, navigate to home
+          context.go(AppRoutes.home);
+        }
+      },
+      child: _buildCartContent(context, ref),
+    );
+  }
+
+  Widget _buildCartContent(BuildContext context, WidgetRef ref) {
     final cartState = ref.watch(cartProvider);
     final cartNotifier = ref.read(cartControllerProvider.notifier);
     final summary = ref.watch(cartSummaryProvider);
@@ -61,12 +74,8 @@ class CartScreen extends ConsumerWidget {
     }
 
     void handleBack() {
-      final router = GoRouter.of(context);
-      if (router.canPop()) {
-        router.pop();
-      } else {
-        context.go(AppRoutes.home);
-      }
+      // Always go back to home when back is pressed from cart
+      context.go(AppRoutes.home);
     }
 
     void handleVisitServices() {
@@ -119,35 +128,28 @@ class CartScreen extends ConsumerWidget {
       appBar: AppBar(
         backgroundColor: AppColors.background,
         elevation: 0,
-        automaticallyImplyLeading: false,
-        titleSpacing: 0,
-        title: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
-          child: Row(
-            children: [
-              InkWell(
+        leading: Padding(
+          padding: const EdgeInsets.only(left: 16),
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: handleBack,
+            child: Container(
+              height: 40,
+              width: 40,
+              decoration: BoxDecoration(
+                color: const Color(0xFFF2F2F2),
                 borderRadius: BorderRadius.circular(12),
-                onTap: handleBack,
-                child: Container(
-                  height: 40,
-                  width: 40,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF2F2F2),
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  child: const Icon(Icons.arrow_back_ios_new, size: 18),
-                ),
               ),
-              const SizedBox(width: 16),
-              const Text(
-                'Cart',
-                style: TextStyle(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.textPrimary,
-                ),
-              ),
-            ],
+              child: const Icon(Icons.arrow_back_ios_new, size: 18),
+            ),
+          ),
+        ),
+        title: const Text(
+          'Cart',
+          style: TextStyle(
+            fontSize: 20,
+            fontWeight: FontWeight.w600,
+            color: AppColors.textPrimary,
           ),
         ),
       ),

@@ -9,10 +9,12 @@ class AccountOptionTile extends StatelessWidget {
     super.key,
     required this.iconAsset,
     required this.label,
+    this.onTap,
   });
 
   final String iconAsset;
   final String label;
+  final VoidCallback? onTap;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +39,7 @@ class AccountOptionTile extends StatelessWidget {
             fontWeight: FontWeight.w500,
           ),
         ),
-        onTap: () {},
+        onTap: onTap,
       ),
     );
   }
