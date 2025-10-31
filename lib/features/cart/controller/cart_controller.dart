@@ -11,22 +11,24 @@ class CartController extends StateNotifier<CartState> {
   static const double serviceFeeFlat = 49.0;
 
   void addItem(CartItem item) {
-    final existingIndex =
-        state.items.indexWhere((cartItem) => cartItem.id == item.id);
+    final existingIndex = state.items.indexWhere(
+      (cartItem) => cartItem.id == item.id,
+    );
     if (existingIndex >= 0) {
       _updateItem(
         existingIndex,
-        state.items[existingIndex]
-            .copyWith(quantity: state.items[existingIndex].quantity + 1),
+        state.items[existingIndex].copyWith(
+          quantity: state.items[existingIndex].quantity + 1,
+        ),
       );
     } else {
       state = state.copyWith(items: [...state.items, item]);
     }
-    
+
     // Sync to Supabase
     _syncToSupabase(item.id, item.quantity);
   }
-  
+
   /// Load cart from Supabase
   Future<void> loadCartFromSupabase() async {
     try {
@@ -44,7 +46,7 @@ class CartController extends StateNotifier<CartState> {
       final current = state.items[idx];
       final newQuantity = current.quantity + 1;
       _updateItem(idx, current.copyWith(quantity: newQuantity));
-      
+
       // Sync to Supabase
       _syncToSupabase(id, newQuantity);
     }
@@ -57,7 +59,7 @@ class CartController extends StateNotifier<CartState> {
       if (current.quantity > 1) {
         final newQuantity = current.quantity - 1;
         _updateItem(idx, current.copyWith(quantity: newQuantity));
-        
+
         // Sync to Supabase
         _syncToSupabase(id, newQuantity);
       } else {
@@ -70,7 +72,7 @@ class CartController extends StateNotifier<CartState> {
     state = state.copyWith(
       items: state.items.where((item) => item.id != id).toList(),
     );
-    
+
     // Remove from Supabase
     _cartService.removeFromCart(id).catchError((e) {
       print('❌ Error removing from Supabase: $e');
@@ -79,7 +81,7 @@ class CartController extends StateNotifier<CartState> {
 
   void clearCart() {
     state = const CartState();
-    
+
     // Clear from Supabase
     _cartService.clearCart().catchError((e) {
       print('❌ Error clearing Supabase cart: $e');
@@ -94,12 +96,12 @@ class CartController extends StateNotifier<CartState> {
     final idx = state.items.indexWhere((item) => item.id == id);
     if (idx >= 0) {
       _updateItem(idx, state.items[idx].copyWith(quantity: quantity));
-      
+
       // Sync to Supabase
       _syncToSupabase(id, quantity);
     }
   }
-  
+
   /// Sync cart item to Supabase
   void _syncToSupabase(String serviceId, int quantity) {
     _cartService.updateQuantity(serviceId, quantity).catchError((e) {
@@ -114,11 +116,12 @@ class CartController extends StateNotifier<CartState> {
   }
 }
 
-final cartControllerProvider =
-    StateNotifierProvider<CartController, CartState>((ref) {
-  final cartService = ref.read(cartServiceProvider);
-  return CartController(cartService);
-});
+final cartControllerProvider = StateNotifierProvider<CartController, CartState>(
+  (ref) {
+    final cartService = ref.read(cartServiceProvider);
+    return CartController(cartService);
+  },
+);
 
 /// Provider for CartService
 final cartServiceProvider = Provider<CartService>((ref) {
@@ -131,8 +134,5 @@ final cartSummaryProvider = Provider<CartSummary>((ref) {
   final state = ref.watch(cartControllerProvider);
   final serviceFee = state.isEmpty ? 0.0 : CartController.serviceFeeFlat;
 
-  return CartSummary(
-    state: state,
-    serviceFee: serviceFee,
-  );
+  return CartSummary(state: state, serviceFee: serviceFee);
 });

@@ -1,11 +1,9 @@
-import 'dart:developer' as developer;
-
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase_lib;
-
 import '../../models/service_model.dart';
 
 class ServiceRepository {
-  final supabase_lib.SupabaseClient _client = supabase_lib.Supabase.instance.client;
+  final supabase_lib.SupabaseClient _client =
+      supabase_lib.Supabase.instance.client;
 
   /// Fetch services by category
   Future<List<ServiceModel>> fetchServicesByCategory(String category) async {
@@ -16,15 +14,11 @@ class ServiceRepository {
           .eq('category', category)
           .order('name', ascending: true);
 
-      return (response as List<dynamic>)
-          .map((item) => ServiceModel.fromJson(item as Map<String, dynamic>))
+      return (response as List)
+          .map((item) => ServiceModel.fromJson(item))
           .toList();
     } catch (e) {
-      developer.log(
-        'Error fetching services by category',
-        error: e,
-        name: 'ServiceRepository',
-      );
+      print('❌ Error fetching services by category: $e');
       rethrow;
     }
   }
@@ -37,15 +31,11 @@ class ServiceRepository {
           .select('*')
           .order('name', ascending: true);
 
-      return (response as List<dynamic>)
-          .map((item) => ServiceModel.fromJson(item as Map<String, dynamic>))
+      return (response as List)
+          .map((item) => ServiceModel.fromJson(item))
           .toList();
     } catch (e) {
-      developer.log(
-        'Error fetching all services',
-        error: e,
-        name: 'ServiceRepository',
-      );
+      print('❌ Error fetching all services: $e');
       rethrow;
     }
   }
@@ -59,14 +49,9 @@ class ServiceRepository {
           .eq('id', id)
           .single();
 
-      final data = Map<String, dynamic>.from(response as Map);
-      return ServiceModel.fromJson(data);
+      return ServiceModel.fromJson(response);
     } catch (e) {
-      developer.log(
-        'Error fetching service by ID',
-        error: e,
-        name: 'ServiceRepository',
-      );
+      print('❌ Error fetching service by ID: $e');
       return null;
     }
   }

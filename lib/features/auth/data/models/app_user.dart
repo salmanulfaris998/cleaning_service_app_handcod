@@ -16,12 +16,12 @@ class AppUser {
   });
 
   factory AppUser.fromJson(Map<String, dynamic> json) => AppUser(
-    id: json['id'] as String? ?? '',
-    firebaseUid: json['firebase_uid'] as String? ?? '',
-    name: json['name'] as String?,
-    email: json['email'] as String?,
-    phone: json['phone'] as String?,
-    photoUrl: json['photo_url'] as String?,
+    id: json['id'],
+    firebaseUid: json['firebase_uid'],
+    name: json['name'],
+    email: json['email'],
+    phone: json['phone'],
+    photoUrl: json['photo_url'],
   );
 
   Map<String, dynamic> toJson() => {

@@ -1,8 +1,5 @@
-import 'dart:developer' as developer;
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase_lib;
-
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/cart_model.dart';
 
 final supabase = supabase_lib.Supabase.instance.client;
@@ -20,14 +17,9 @@ class CartService {
         .eq('firebase_uid', firebaseUser.uid)
         .maybeSingle();
 
-    if (userData == null) throw StateError('User not found in Supabase');
+    if (userData == null) throw Exception('User not found in Supabase');
 
-    final id = userData['id'] as String?;
-    if (id == null) {
-      throw StateError('Supabase user record missing id');
-    }
-
-    return id;
+    return userData['id'];
   }
 
   /// Add item to cart or update quantity if exists
@@ -35,26 +27,15 @@ class CartService {
     try {
       final userId = await _getSupabaseUserId();
 
-      await supabase.from('cart').upsert(
-        {
-          'user_id': userId,
-          'service_id': serviceId,
-          'quantity': quantity,
-        },
-        onConflict: 'user_id,service_id',
-      );
+      await supabase.from('cart').upsert({
+        'user_id': userId,
+        'service_id': serviceId,
+        'quantity': quantity,
+      }, onConflict: 'user_id,service_id');
 
-      developer.log(
-        'Added to cart: $serviceId (qty: $quantity)',
-        name: 'CartService',
-      );
-    } catch (e, stackTrace) {
-      developer.log(
-        'Error adding to cart',
-        error: e,
-        stackTrace: stackTrace,
-        name: 'CartService',
-      );
+      print('✅ Added to cart: $serviceId (qty: $quantity)');
+    } catch (e) {
+      print('❌ Error adding to cart: $e');
       rethrow;
     }
   }
@@ -70,23 +51,17 @@ class CartService {
           .eq('user_id', userId);
 
       // Convert response to CartItem list
-      return (response as List<dynamic>).map((item) {
-        final typedItem = item as Map<String, dynamic>;
-        final service = typedItem['services'] as Map<String, dynamic>;
+      return (response as List).map((item) {
+        final service = item['services'];
         return CartItem(
-          id: service['id'] as String? ?? '',
-          name: service['name'] as String? ?? '',
-          price: (service['price'] as num?)?.toDouble() ?? 0,
-          quantity: typedItem['quantity'] as int? ?? 0,
+          id: service['id'],
+          name: service['name'],
+          price: (service['price'] as num).toDouble(),
+          quantity: item['quantity'] as int,
         );
       }).toList();
-    } catch (e, stackTrace) {
-      developer.log(
-        'Error fetching cart items',
-        error: e,
-        stackTrace: stackTrace,
-        name: 'CartService',
-      );
+    } catch (e) {
+      print('❌ Error fetching cart items: $e');
       rethrow;
     }
   }
@@ -101,14 +76,9 @@ class CartService {
           .select('*, services(*)')
           .eq('user_id', userId);
 
-      return List<Map<String, dynamic>>.from(response as List<dynamic>);
-    } catch (e, stackTrace) {
-      developer.log(
-        'Error fetching cart items raw',
-        error: e,
-        stackTrace: stackTrace,
-        name: 'CartService',
-      );
+      return List<Map<String, dynamic>>.from(response);
+    } catch (e) {
+      print('❌ Error fetching cart items: $e');
       rethrow;
     }
   }
@@ -123,21 +93,15 @@ class CartService {
         return;
       }
 
-      await supabase.from('cart').upsert(
-        {
-          'user_id': userId,
-          'service_id': serviceId,
-          'quantity': quantity,
-        },
-        onConflict: 'user_id,service_id',
-      );
-    } catch (e, stackTrace) {
-      developer.log(
-        'Error updating cart quantity',
-        error: e,
-        stackTrace: stackTrace,
-        name: 'CartService',
-      );
+      await supabase.from('cart').upsert({
+        'user_id': userId,
+        'service_id': serviceId,
+        'quantity': quantity,
+      }, onConflict: 'user_id,service_id');
+
+      print('✅ Updated cart quantity: $serviceId (qty: $quantity)');
+    } catch (e) {
+      print('❌ Error updating cart quantity: $e');
       rethrow;
     }
   }
@@ -152,13 +116,10 @@ class CartService {
           .delete()
           .eq('user_id', userId)
           .eq('service_id', serviceId);
-    } catch (e, stackTrace) {
-      developer.log(
-        'Error removing from cart',
-        error: e,
-        stackTrace: stackTrace,
-        name: 'CartService',
-      );
+
+      print('✅ Removed from cart: $serviceId');
+    } catch (e) {
+      print('❌ Error removing from cart: $e');
       rethrow;
     }
   }
@@ -169,13 +130,10 @@ class CartService {
       final userId = await _getSupabaseUserId();
 
       await supabase.from('cart').delete().eq('user_id', userId);
-    } catch (e, stackTrace) {
-      developer.log(
-        'Error clearing cart',
-        error: e,
-        stackTrace: stackTrace,
-        name: 'CartService',
-      );
+
+      print('✅ Cart cleared');
+    } catch (e) {
+      print('❌ Error clearing cart: $e');
       rethrow;
     }
   }
@@ -190,21 +148,22 @@ class CartService {
 
       // Insert all local items
       if (localItems.isNotEmpty) {
-        final cartData = localItems.map((item) => {
-              'user_id': userId,
-              'service_id': item.id,
-              'quantity': item.quantity,
-            }).toList();
+        final cartData = localItems
+            .map(
+              (item) => {
+                'user_id': userId,
+                'service_id': item.id,
+                'quantity': item.quantity,
+              },
+            )
+            .toList();
 
         await supabase.from('cart').insert(cartData);
       }
-    } catch (e, stackTrace) {
-      developer.log(
-        'Error syncing cart',
-        error: e,
-        stackTrace: stackTrace,
-        name: 'CartService',
-      );
+
+      print('✅ Local cart synced to Supabase');
+    } catch (e) {
+      print('❌ Error syncing cart: $e');
       rethrow;
     }
   }

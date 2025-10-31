@@ -22,19 +22,16 @@ class CouponModel {
   });
 
   factory CouponModel.fromJson(Map<String, dynamic> json) {
-    final validFromRaw = json['valid_from'] as String?;
-    final validUntilRaw = json['valid_until'] as String?;
-
     return CouponModel(
-      id: json['id'] as String? ?? '',
-      code: json['code'] as String? ?? '',
-      description: json['description'] as String? ?? '',
+      id: json['id'] ?? '',
+      code: json['code'] ?? '',
+      description: json['description'] ?? '',
       discountPercent: (json['discount_percent'] as num?)?.toDouble() ?? 0.0,
-      validFrom: validFromRaw != null ? DateTime.parse(validFromRaw) : DateTime.now(),
-      validUntil: validUntilRaw != null ? DateTime.parse(validUntilRaw) : DateTime.now(),
-      maxUses: json['max_uses'] as int? ?? 0,
-      usedCount: json['used_count'] as int? ?? 0,
-      active: json['active'] as bool? ?? false,
+      validFrom: DateTime.parse(json['valid_from']),
+      validUntil: DateTime.parse(json['valid_until']),
+      maxUses: json['max_uses'] ?? 0,
+      usedCount: json['used_count'] ?? 0,
+      active: json['active'] ?? false,
     );
   }
 

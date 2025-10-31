@@ -1,27 +1,22 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
-typedef VerificationCompletedCallback = void Function(PhoneAuthCredential credential);
-typedef VerificationFailedCallback = void Function(FirebaseAuthException exception);
-typedef CodeSentCallback = void Function(String verificationId, int? forceResendingToken);
-typedef CodeAutoRetrievalTimeoutCallback = void Function(String verificationId);
-
 class PhoneAuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
-  
+
   // Get current user
   User? get currentUser => _firebaseAuth.currentUser;
-  
+
   // Auth state changes stream
   Stream<User?> get authStateChanges => _firebaseAuth.authStateChanges();
 
   // Send OTP to phone number
   Future<void> verifyPhoneNumber({
     required String phoneNumber,
-    required VerificationCompletedCallback verificationCompleted,
-    required VerificationFailedCallback verificationFailed,
-    required CodeSentCallback codeSent,
-    required CodeAutoRetrievalTimeoutCallback codeAutoRetrievalTimeout,
+    required Function(PhoneAuthCredential) verificationCompleted,
+    required Function(FirebaseAuthException) verificationFailed,
+    required Function(String, int?) codeSent,
+    required Function(String) codeAutoRetrievalTimeout,
   }) async {
     try {
       await _firebaseAuth.verifyPhoneNumber(
@@ -48,7 +43,7 @@ class PhoneAuthService {
         verificationId: verificationId,
         smsCode: smsCode,
       );
-      
+
       return await _firebaseAuth.signInWithCredential(credential);
     } catch (e) {
       debugPrint('OTP verification error: $e');
