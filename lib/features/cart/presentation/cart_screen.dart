@@ -11,6 +11,9 @@ import '../../cleaning_services/controller/service_controller.dart';
 import '../../common/cart_summary_bar.dart';
 import '../controller/cart_controller.dart';
 import '../data/models/cart_model.dart';
+import '../data/models/coupon_model.dart';
+import '../data/service/coupon_service.dart';
+import '../data/providers/coupon_providers.dart';
 import '../presentation/widgets/bill_details_card.dart';
 import '../presentation/widgets/cart_product_card.dart';
 import '../presentation/widgets/coupon_code_field.dart';
@@ -58,18 +61,51 @@ class CartScreen extends ConsumerWidget {
         .toList()
       ..sort((a, b) => b.orders.compareTo(a.orders));
 
-    void handleApplyCoupon() {
+    Future<void> handleApplyCoupon() async {
       FocusScope.of(context).unfocus();
       final code = couponController.text.trim();
       if (code.isEmpty) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Please enter a coupon code.')),
+          const SnackBar(
+            content: Text('Please enter a coupon code.'),
+            backgroundColor: Colors.red,
+          ),
         );
         return;
       }
 
+      // Show loading
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Applied coupon: $code')),
+        const SnackBar(
+          content: Text('Validating coupon...'),
+          duration: Duration(seconds: 1),
+        ),
+      );
+
+      // Validate coupon
+      final couponService = ref.read(couponServiceProvider);
+      final coupon = await couponService.validateCoupon(code);
+
+      if (coupon == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Invalid or expired coupon: $code'),
+            backgroundColor: Colors.red,
+          ),
+        );
+        return;
+      }
+
+      // Apply coupon
+      final discountPercent = coupon['discount_percent'];
+      ref.read(appliedCouponProvider.notifier).state = 
+          CouponModel.fromJson(coupon);
+      
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Coupon applied: $code ($discountPercent% off)'),
+          backgroundColor: Colors.green,
+        ),
       );
     }
 

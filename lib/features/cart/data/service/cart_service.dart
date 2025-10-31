@@ -27,11 +27,14 @@ class CartService {
     try {
       final userId = await _getSupabaseUserId();
 
-      await supabase.from('cart').upsert({
-        'user_id': userId,
-        'service_id': serviceId,
-        'quantity': quantity,
-      });
+      await supabase.from('cart').upsert(
+        {
+          'user_id': userId,
+          'service_id': serviceId,
+          'quantity': quantity,
+        },
+        onConflict: 'user_id,service_id',
+      );
 
       print('✅ Added to cart: $serviceId (qty: $quantity)');
     } catch (e) {
@@ -93,11 +96,14 @@ class CartService {
         return;
       }
 
-      await supabase.from('cart').upsert({
-        'user_id': userId,
-        'service_id': serviceId,
-        'quantity': quantity,
-      });
+      await supabase.from('cart').upsert(
+        {
+          'user_id': userId,
+          'service_id': serviceId,
+          'quantity': quantity,
+        },
+        onConflict: 'user_id,service_id',
+      );
 
       print('✅ Updated cart quantity: $serviceId (qty: $quantity)');
     } catch (e) {

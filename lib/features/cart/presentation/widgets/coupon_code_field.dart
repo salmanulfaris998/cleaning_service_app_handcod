@@ -43,6 +43,26 @@ class CouponCodeField extends StatelessWidget {
             children: [
               const SizedBox(height: 20),
 
+              // Available coupons scrolling text
+              SizedBox(
+                height: 24,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  children: [
+                    Text(
+                      'Available: CLEAN20 • FESTIVE30 • WELCOME10',
+                      style: AppTextStyles.caption.copyWith(
+                        color: AppColors.primary,
+                        fontWeight: FontWeight.w500,
+                        fontSize: 12,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              
+              const SizedBox(height: 12),
+
               Row(
                 children: [
                   Expanded(
