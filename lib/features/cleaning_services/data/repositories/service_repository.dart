@@ -1,4 +1,7 @@
+import 'dart:developer' as developer;
+
 import 'package:supabase_flutter/supabase_flutter.dart' as supabase_lib;
+
 import '../../models/service_model.dart';
 
 class ServiceRepository {
@@ -13,11 +16,15 @@ class ServiceRepository {
           .eq('category', category)
           .order('name', ascending: true);
 
-      return (response as List)
-          .map((item) => ServiceModel.fromJson(item))
+      return (response as List<dynamic>)
+          .map((item) => ServiceModel.fromJson(item as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      print('❌ Error fetching services by category: $e');
+      developer.log(
+        'Error fetching services by category',
+        error: e,
+        name: 'ServiceRepository',
+      );
       rethrow;
     }
   }
@@ -30,11 +37,15 @@ class ServiceRepository {
           .select('*')
           .order('name', ascending: true);
 
-      return (response as List)
-          .map((item) => ServiceModel.fromJson(item))
+      return (response as List<dynamic>)
+          .map((item) => ServiceModel.fromJson(item as Map<String, dynamic>))
           .toList();
     } catch (e) {
-      print('❌ Error fetching all services: $e');
+      developer.log(
+        'Error fetching all services',
+        error: e,
+        name: 'ServiceRepository',
+      );
       rethrow;
     }
   }
@@ -48,9 +59,14 @@ class ServiceRepository {
           .eq('id', id)
           .single();
 
-      return ServiceModel.fromJson(response);
+      final data = Map<String, dynamic>.from(response as Map);
+      return ServiceModel.fromJson(data);
     } catch (e) {
-      print('❌ Error fetching service by ID: $e');
+      developer.log(
+        'Error fetching service by ID',
+        error: e,
+        name: 'ServiceRepository',
+      );
       return null;
     }
   }

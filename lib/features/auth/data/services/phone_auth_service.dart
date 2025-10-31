@@ -1,6 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
+typedef VerificationCompletedCallback = void Function(PhoneAuthCredential credential);
+typedef VerificationFailedCallback = void Function(FirebaseAuthException exception);
+typedef CodeSentCallback = void Function(String verificationId, int? forceResendingToken);
+typedef CodeAutoRetrievalTimeoutCallback = void Function(String verificationId);
+
 class PhoneAuthService {
   final FirebaseAuth _firebaseAuth = FirebaseAuth.instance;
   
@@ -13,10 +18,10 @@ class PhoneAuthService {
   // Send OTP to phone number
   Future<void> verifyPhoneNumber({
     required String phoneNumber,
-    required Function(PhoneAuthCredential) verificationCompleted,
-    required Function(FirebaseAuthException) verificationFailed,
-    required Function(String, int?) codeSent,
-    required Function(String) codeAutoRetrievalTimeout,
+    required VerificationCompletedCallback verificationCompleted,
+    required VerificationFailedCallback verificationFailed,
+    required CodeSentCallback codeSent,
+    required CodeAutoRetrievalTimeoutCallback codeAutoRetrievalTimeout,
   }) async {
     try {
       await _firebaseAuth.verifyPhoneNumber(

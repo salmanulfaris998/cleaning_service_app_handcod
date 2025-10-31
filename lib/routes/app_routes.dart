@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 
@@ -29,17 +28,17 @@ class AppRoutes {
       GoRoute(
         path: login,
         name: 'login',
-        pageBuilder: (context, state) => CupertinoPage(
+        pageBuilder: (context, state) => _fadeTransition(
+          const SafePageWrapper(child: LoginScreen()),
           key: state.pageKey,
-          child: const SafePageWrapper(child: LoginScreen()),
         ),
       ),
       GoRoute(
         path: phoneAuth,
         name: 'phoneAuth',
-        pageBuilder: (context, state) => CupertinoPage(
+        pageBuilder: (context, state) => _fadeTransition(
+          const SafePageWrapper(child: PhoneOtpScreen()),
           key: state.pageKey,
-          child: const SafePageWrapper(child: PhoneOtpScreen()),
         ),
       ),
       ShellRoute(
@@ -48,46 +47,55 @@ class AppRoutes {
           GoRoute(
             path: home,
             name: 'home',
-            pageBuilder: (context, state) =>
-                _fadeTransition(const SafePageWrapper(child: HomeScreen())),
+            pageBuilder: (context, state) => _fadeTransition(
+              const SafePageWrapper(child: HomeScreen()),
+              key: state.pageKey,
+            ),
           ),
           GoRoute(
             path: bookings,
             name: 'bookings',
-            pageBuilder: (context, state) =>
-                _fadeTransition(const SafePageWrapper(child: BookingsScreen())),
+            pageBuilder: (context, state) => _fadeTransition(
+              const SafePageWrapper(child: BookingsScreen()),
+              key: state.pageKey,
+            ),
           ),
           GoRoute(
             path: account,
             name: 'account',
-            pageBuilder: (context, state) =>
-                _fadeTransition(const SafePageWrapper(child: MyAccountScreen())),
+            pageBuilder: (context, state) => _fadeTransition(
+              const SafePageWrapper(child: MyAccountScreen()),
+              key: state.pageKey,
+            ),
           ),
         ],
       ),
       GoRoute(
         path: services,
         name: 'services',
-        pageBuilder: (context, state) => CupertinoPage(
+        pageBuilder: (context, state) => _fadeTransition(
+          const SafePageWrapper(child: ServiceListingScreen()),
           key: state.pageKey,
-          child: const SafePageWrapper(child: ServiceListingScreen()),
         ),
       ),
       GoRoute(
         path: cart,
         name: 'cart',
-        pageBuilder: (context, state) => CupertinoPage(
+        pageBuilder: (context, state) => _fadeTransition(
+          const SafePageWrapper(child: CartScreen()),
           key: state.pageKey,
-          child: const SafePageWrapper(child: CartScreen()),
         ),
       ),
     ],
   );
 
   // 🔹 Fade Transition for all tab routes
-  static CustomTransitionPage _fadeTransition(Widget child) {
-    return CustomTransitionPage(
-      key: ValueKey(child.hashCode),
+  static CustomTransitionPage<void> _fadeTransition(
+    Widget child, {
+    LocalKey? key,
+  }) {
+    return CustomTransitionPage<void>(
+      key: key ?? ValueKey(child.hashCode),
       child: child,
       transitionsBuilder: (context, animation, secondaryAnimation, child) {
         return FadeTransition(
