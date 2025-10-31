@@ -7,7 +7,8 @@ import '../../../core/constants/app_spacing.dart';
 import '../../../core/constants/app_text_styles.dart';
 import '../../../core/constants/app_texts.dart';
 import '../../../routes/app_routes.dart';
-import '../../cleaning_services/controller/service_controller.dart';
+import '../../cleaning_services/data/providers/service_providers.dart';
+import '../../cleaning_services/models/service_model.dart';
 import '../../common/cart_summary_bar.dart';
 import '../../orders/data/service/order_service.dart';
 import '../controller/cart_controller.dart';
@@ -68,10 +69,7 @@ class CartScreen extends ConsumerWidget {
       couponLabel: AppTexts.cartCouponDiscountLabel,
       couponDiscount: couponDiscount,
     );
-    final frequentlyAddedServices = cleaningServicesByCategory.values
-        .expand((services) => services)
-        .toList()
-      ..sort((a, b) => b.orders.compareTo(a.orders));
+    final frequentlyAddedServicesAsync = ref.watch(allServicesProvider);
     final isPlacingOrder = ref.watch(_isPlacingOrderProvider);
 
     Future<void> handleApplyCoupon() async {
@@ -183,43 +181,60 @@ class CartScreen extends ConsumerWidget {
     }
 
     Widget buildFrequentlyAddedSection() {
-      if (frequentlyAddedServices.isEmpty) {
-        return const SizedBox.shrink();
-      }
+      return frequentlyAddedServicesAsync.when(
+        data: (services) {
+          if (services.isEmpty) {
+            return const SizedBox.shrink();
+          }
 
-      final topServices = frequentlyAddedServices.take(5).toList();
+          final sortedServices = [...services]
+            ..sort((a, b) => (b.ordersCount).compareTo(a.ordersCount));
+          final topServices = sortedServices.take(5).toList();
 
-      return Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const SizedBox(height: AppSpacing.xl),
-          Text('Frequently added services', style: AppTextStyles.heading2),
-          const SizedBox(height: AppSpacing.md),
-          SizedBox(
-            height: 210,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: EdgeInsets.zero,
-              itemCount: topServices.length,
-              itemBuilder: (context, index) {
-                final service = topServices[index];
-                return CartProductCard(
-                  image: service.imageUrl,
-                  title: service.name,
-                  price: service.price,
-                  onAdd: () => cartNotifier.addItem(
-                    CartItem(
-                      id: service.id,
-                      name: service.name,
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: AppSpacing.xl),
+              Text('Frequently added services', style: AppTextStyles.heading2),
+              const SizedBox(height: AppSpacing.md),
+              SizedBox(
+                height: 210,
+                child: ListView.builder(
+                  scrollDirection: Axis.horizontal,
+                  padding: EdgeInsets.zero,
+                  itemCount: topServices.length,
+                  itemBuilder: (context, index) {
+                    final ServiceModel service = topServices[index];
+                    return CartProductCard(
+                      imageUrl: service.imageUrl,
+                      title: service.name,
                       price: service.price,
-                      quantity: 1,
-                    ),
-                  ),
-                );
-              },
+                      onAdd: () => cartNotifier.addItem(
+                        CartItem(
+                          id: service.id,
+                          name: service.name,
+                          price: service.price,
+                          quantity: 1,
+                        ),
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ],
+          );
+        },
+        loading: () => const Padding(
+          padding: EdgeInsets.symmetric(vertical: AppSpacing.lg),
+          child: Center(
+            child: SizedBox(
+              height: 24,
+              width: 24,
+              child: CircularProgressIndicator(strokeWidth: 2),
             ),
           ),
-        ],
+        ),
+        error: (_, __) => const SizedBox.shrink(),
       );
     }
 

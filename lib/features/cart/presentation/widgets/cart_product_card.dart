@@ -6,13 +6,13 @@ import '../../../../core/constants/app_spacing.dart';
 class CartProductCard extends StatelessWidget {
   const CartProductCard({
     super.key,
-    required this.image,
+    required this.imageUrl,
     required this.title,
     required this.price,
     this.onAdd,
   });
 
-  final String image;
+  final String imageUrl;
   final String title;
   final double price;
   final VoidCallback? onAdd;
@@ -42,12 +42,7 @@ class CartProductCard extends StatelessWidget {
               topLeft: Radius.circular(20),
               topRight: Radius.circular(20),
             ),
-            child: Image.asset(
-              image,
-              height: 100,
-              width: double.infinity,
-              fit: BoxFit.cover,
-            ),
+            child: _buildImage(),
           ),
 
           // 🔹 Details Section
@@ -105,6 +100,43 @@ class CartProductCard extends StatelessWidget {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget _buildImage() {
+    final isNetwork = imageUrl.startsWith('http');
+    final imageWidget = isNetwork
+        ? Image.network(
+            imageUrl,
+            height: 100,
+            width: double.infinity,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => _placeholderImage(),
+          )
+        : Image.asset(
+            imageUrl,
+            height: 100,
+            width: double.infinity,
+            fit: BoxFit.cover,
+          );
+
+    return SizedBox(
+      height: 100,
+      width: double.infinity,
+      child: imageWidget,
+    );
+  }
+
+  Widget _placeholderImage() {
+    return Container(
+      height: 100,
+      width: double.infinity,
+      color: AppColors.background,
+      alignment: Alignment.center,
+      child: Icon(
+        Icons.image_not_supported,
+        color: AppColors.textSecondary.withOpacity(0.6),
       ),
     );
   }
