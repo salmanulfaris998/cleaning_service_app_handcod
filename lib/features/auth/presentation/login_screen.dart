@@ -9,6 +9,7 @@ import '../../../core/constants/app_texts.dart';
 import '../../../core/widgets/custom_button.dart';
 import '../../../core/widgets/safe_page_wrapper.dart';
 import '../../../routes/app_routes.dart';
+import '../../cart/controller/cart_controller.dart';
 import '../controllers/auth_controller.dart';
 import 'widgets/logo_placeholder.dart';
 
@@ -20,9 +21,11 @@ class LoginScreen extends ConsumerWidget {
     final authState = ref.watch(authControllerProvider);
     final authController = ref.read(authControllerProvider.notifier);
 
-    // Navigate to home if authenticated
+    // Navigate to home if authenticated and load cart
     ref.listen(authControllerProvider, (previous, next) {
       if (next.status == AuthStatus.authenticated) {
+        // Load cart from Supabase after successful login
+        ref.read(cartControllerProvider.notifier).loadCartFromSupabase();
         context.go(AppRoutes.home);
       }
     });

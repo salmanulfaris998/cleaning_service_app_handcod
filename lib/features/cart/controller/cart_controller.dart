@@ -3,9 +3,12 @@ import 'dart:math' as math;
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/models/cart_model.dart';
+import '../data/service/cart_service.dart';
 
 class CartController extends StateNotifier<CartState> {
-  CartController() : super(const CartState());
+  final CartService _cartService;
+  
+  CartController(this._cartService) : super(const CartState());
 
   static const double walletBalance = 1250.0;
   static const double serviceFeeFlat = 49.0;
@@ -22,13 +25,31 @@ class CartController extends StateNotifier<CartState> {
     } else {
       state = state.copyWith(items: [...state.items, item]);
     }
+    
+    // Sync to Supabase
+    _syncToSupabase(item.id, item.quantity);
+  }
+  
+  /// Load cart from Supabase
+  Future<void> loadCartFromSupabase() async {
+    try {
+      final items = await _cartService.getCartItems();
+      state = CartState(items: items);
+      print('✅ Cart loaded from Supabase: ${items.length} items');
+    } catch (e) {
+      print('❌ Error loading cart from Supabase: $e');
+    }
   }
 
   void incrementItem(String id) {
     final idx = state.items.indexWhere((item) => item.id == id);
     if (idx >= 0) {
       final current = state.items[idx];
-      _updateItem(idx, current.copyWith(quantity: current.quantity + 1));
+      final newQuantity = current.quantity + 1;
+      _updateItem(idx, current.copyWith(quantity: newQuantity));
+      
+      // Sync to Supabase
+      _syncToSupabase(id, newQuantity);
     }
   }
 
@@ -37,7 +58,11 @@ class CartController extends StateNotifier<CartState> {
     if (idx >= 0) {
       final current = state.items[idx];
       if (current.quantity > 1) {
-        _updateItem(idx, current.copyWith(quantity: current.quantity - 1));
+        final newQuantity = current.quantity - 1;
+        _updateItem(idx, current.copyWith(quantity: newQuantity));
+        
+        // Sync to Supabase
+        _syncToSupabase(id, newQuantity);
       } else {
         removeItem(id);
       }
@@ -48,10 +73,20 @@ class CartController extends StateNotifier<CartState> {
     state = state.copyWith(
       items: state.items.where((item) => item.id != id).toList(),
     );
+    
+    // Remove from Supabase
+    _cartService.removeFromCart(id).catchError((e) {
+      print('❌ Error removing from Supabase: $e');
+    });
   }
 
   void clearCart() {
     state = const CartState();
+    
+    // Clear from Supabase
+    _cartService.clearCart().catchError((e) {
+      print('❌ Error clearing Supabase cart: $e');
+    });
   }
 
   void setQuantity(String id, int quantity) {
@@ -62,7 +97,17 @@ class CartController extends StateNotifier<CartState> {
     final idx = state.items.indexWhere((item) => item.id == id);
     if (idx >= 0) {
       _updateItem(idx, state.items[idx].copyWith(quantity: quantity));
+      
+      // Sync to Supabase
+      _syncToSupabase(id, quantity);
     }
+  }
+  
+  /// Sync cart item to Supabase
+  void _syncToSupabase(String serviceId, int quantity) {
+    _cartService.updateQuantity(serviceId, quantity).catchError((e) {
+      print('❌ Error syncing to Supabase: $e');
+    });
   }
 
   void _updateItem(int index, CartItem updated) {
@@ -74,7 +119,13 @@ class CartController extends StateNotifier<CartState> {
 
 final cartControllerProvider =
     StateNotifierProvider<CartController, CartState>((ref) {
-  return CartController();
+  final cartService = ref.read(cartServiceProvider);
+  return CartController(cartService);
+});
+
+/// Provider for CartService
+final cartServiceProvider = Provider<CartService>((ref) {
+  return CartService();
 });
 
 final cartProvider = cartControllerProvider;
