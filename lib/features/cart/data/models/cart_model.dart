@@ -57,30 +57,39 @@ class BillItem {
 
 class CartSummary {
   final CartState state;
-  final double walletBalance;
-  final double redeemableAmount;
   final double serviceFee;
 
   CartSummary({
     required this.state,
-    required this.walletBalance,
-    required this.redeemableAmount,
     required this.serviceFee,
   });
 
-  double get total => state.subtotal - redeemableAmount + serviceFee;
+  double get total => state.subtotal + serviceFee;
 
   List<BillItem> buildBillItems({
     required String subtotalLabel,
     required String serviceFeeLabel,
-    required String walletLabel,
+    String couponLabel = 'Coupon Discount',
+    double couponDiscount = 0.0,
   }) {
-    return [
+    final items = <BillItem>[
       BillItem(label: subtotalLabel, amount: state.subtotal),
-      if (redeemableAmount > 0)
-        BillItem(label: walletLabel, amount: redeemableAmount, isDiscount: true),
-      if (serviceFee > 0)
-        BillItem(label: serviceFeeLabel, amount: serviceFee),
     ];
+
+    if (couponDiscount > 0) {
+      items.add(
+        BillItem(
+          label: couponLabel,
+          amount: couponDiscount,
+          isDiscount: true,
+        ),
+      );
+    }
+
+    if (serviceFee > 0) {
+      items.add(BillItem(label: serviceFeeLabel, amount: serviceFee));
+    }
+
+    return items;
   }
 }

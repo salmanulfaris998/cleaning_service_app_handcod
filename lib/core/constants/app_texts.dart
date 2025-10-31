@@ -47,7 +47,7 @@ class AppTexts {
   static const String cartBillDetailsTitle = 'Bill Details';
   static const String cartTotalLabel = 'Total';
   static const String cartSubtotalLabel = 'Subtotal';
-  static const String cartWalletAppliedLabel = 'Coupon Code';
+  static const String cartCouponDiscountLabel = 'Coupon Discount';
   static const String cartServiceFeeLabel = 'Taxes and Fees';
   static const String cartGrandTotalLabel = 'Grand Total';
   static const String cartBookSlotCta = 'Book Slot';

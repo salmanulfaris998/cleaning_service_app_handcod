@@ -9,16 +9,15 @@ import '../../../core/constants/app_texts.dart';
 import '../../../routes/app_routes.dart';
 import '../../cleaning_services/controller/service_controller.dart';
 import '../../common/cart_summary_bar.dart';
+import '../../orders/data/service/order_service.dart';
 import '../controller/cart_controller.dart';
 import '../data/models/cart_model.dart';
 import '../data/models/coupon_model.dart';
-import '../data/service/coupon_service.dart';
 import '../data/providers/coupon_providers.dart';
 import '../presentation/widgets/bill_details_card.dart';
 import '../presentation/widgets/cart_product_card.dart';
 import '../presentation/widgets/coupon_code_field.dart';
 import '../presentation/widgets/quantity_control.dart';
-import '../presentation/widgets/wallet_balance_info.dart';
 
 final _couponControllerProvider = Provider.autoDispose<TextEditingController>(
   (ref) {
@@ -27,6 +26,8 @@ final _couponControllerProvider = Provider.autoDispose<TextEditingController>(
     return controller;
   },
 );
+
+final _isPlacingOrderProvider = StateProvider.autoDispose<bool>((ref) => false);
 
 class CartScreen extends ConsumerWidget {
   const CartScreen({super.key});
@@ -50,16 +51,28 @@ class CartScreen extends ConsumerWidget {
     final cartNotifier = ref.read(cartControllerProvider.notifier);
     final summary = ref.watch(cartSummaryProvider);
     final couponController = ref.watch(_couponControllerProvider);
+    final appliedCoupon = ref.watch(appliedCouponProvider);
+    final rawCouponDiscount = (appliedCoupon != null && appliedCoupon.isValid)
+        ? appliedCoupon.calculateDiscount(summary.state.subtotal)
+        : 0.0;
+    final couponDiscount = rawCouponDiscount
+        .clamp(0.0, summary.state.subtotal)
+        .toDouble();
+    final subtotal = summary.state.subtotal;
+    final taxAmount = summary.serviceFee;
+    final computedTotal = subtotal - couponDiscount + taxAmount;
+    final billTotal = computedTotal < 0 ? 0.0 : computedTotal;
     final billItems = summary.buildBillItems(
       subtotalLabel: AppTexts.cartSubtotalLabel,
       serviceFeeLabel: AppTexts.cartServiceFeeLabel,
-      walletLabel: AppTexts.cartWalletAppliedLabel,
+      couponLabel: AppTexts.cartCouponDiscountLabel,
+      couponDiscount: couponDiscount,
     );
-    final billTotal = summary.total;
     final frequentlyAddedServices = cleaningServicesByCategory.values
         .expand((services) => services)
         .toList()
       ..sort((a, b) => b.orders.compareTo(a.orders));
+    final isPlacingOrder = ref.watch(_isPlacingOrderProvider);
 
     Future<void> handleApplyCoupon() async {
       FocusScope.of(context).unfocus();
@@ -116,6 +129,57 @@ class CartScreen extends ConsumerWidget {
 
     void handleVisitServices() {
       context.push(AppRoutes.services);
+    }
+
+    Future<void> handlePlaceOrder() async {
+      if (cartState.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Your cart is empty.')),
+        );
+        return;
+      }
+
+      if (isPlacingOrder) return;
+
+      final placingOrder = ref.read(_isPlacingOrderProvider.notifier);
+      placingOrder.state = true;
+
+      try {
+        final success = await orderService.createOrder(
+          subtotal: subtotal,
+          couponDiscount: couponDiscount,
+          tax: taxAmount,
+          total: billTotal,
+          couponCode: appliedCoupon?.code,
+        );
+
+        if (!context.mounted) return;
+
+        if (success) {
+          cartNotifier.clearCart();
+          ref.read(appliedCouponProvider.notifier).state = null;
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Booking successful!')),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Failed to complete booking. Please try again.'),
+              backgroundColor: Colors.red,
+            ),
+          );
+        }
+      } catch (e) {
+        if (!context.mounted) return;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to complete booking: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      } finally {
+        placingOrder.state = false;
+      }
     }
 
     Widget buildFrequentlyAddedSection() {
@@ -299,11 +363,6 @@ class CartScreen extends ConsumerWidget {
                     onApply: handleApplyCoupon,
                   ),
                   const SizedBox(height: AppSpacing.lg),
-                  WalletBalanceInfo(
-                    walletBalance: CartController.walletBalance,
-                    redeemableAmount: summary.redeemableAmount,
-                  ),
-                  const SizedBox(height: AppSpacing.xs),
                   BillDetailsCard(
                     products: cartState.items,
                     items: billItems,
@@ -319,20 +378,17 @@ class CartScreen extends ConsumerWidget {
               child: CartSummaryBar(
                 totalLabel: AppTexts.cartGrandTotalLabel,
                 totalAmount: billTotal,
-                buttonLabel: AppTexts.cartBookSlotCta,
+                buttonLabel:
+                    isPlacingOrder ? 'Processing…' : AppTexts.cartBookSlotCta,
                 buttonGradient: const LinearGradient(
                   colors: [Color(0xFF6CCB73), Color(0xFF188B5A)],
                   begin: Alignment.topLeft,
                   end: Alignment.bottomRight,
                 ),
                 onPressed: () {
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(
-                        'Proceeding with total of ₹${billTotal.toStringAsFixed(0)}',
-                      ),
-                    ),
-                  );
+                  if (!isPlacingOrder) {
+                    handlePlaceOrder();
+                  }
                 },
               ),
             ),

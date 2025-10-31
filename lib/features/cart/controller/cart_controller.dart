@@ -1,5 +1,3 @@
-import 'dart:math' as math;
-
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
 import '../data/models/cart_model.dart';
@@ -7,10 +5,9 @@ import '../data/service/cart_service.dart';
 
 class CartController extends StateNotifier<CartState> {
   final CartService _cartService;
-  
+
   CartController(this._cartService) : super(const CartState());
 
-  static const double walletBalance = 1250.0;
   static const double serviceFeeFlat = 49.0;
 
   void addItem(CartItem item) {
@@ -132,16 +129,10 @@ final cartProvider = cartControllerProvider;
 
 final cartSummaryProvider = Provider<CartSummary>((ref) {
   final state = ref.watch(cartControllerProvider);
-  final subtotal = state.subtotal;
-  final redeemableAmount = state.isEmpty
-      ? 0.0
-      : math.min(CartController.walletBalance, subtotal * 0.2);
   final serviceFee = state.isEmpty ? 0.0 : CartController.serviceFeeFlat;
 
   return CartSummary(
     state: state,
-    walletBalance: CartController.walletBalance,
-    redeemableAmount: redeemableAmount,
     serviceFee: serviceFee,
   );
 });
