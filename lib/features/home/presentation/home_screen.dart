@@ -73,7 +73,7 @@ class HomeScreen extends ConsumerWidget {
                   iconPath: AppImages.wasteDisposalService,
                 ),
               ],
-              onSeeAll: () => context.go(AppRoutes.services),
+              onSeeAll: () => context.push(AppRoutes.services),
             ),
             const SizedBox(height: AppSpacing.xl),
             CleaningServicesSection(
@@ -91,7 +91,7 @@ class HomeScreen extends ConsumerWidget {
                   imagePath: AppImages.serviceSofaCleaning,
                 ),
               ],
-              onSeeAll: () => context.go(AppRoutes.services),
+              onSeeAll: () => context.push(AppRoutes.services),
             ),
             const SizedBox(height: AppSpacing.xl),
             const SizedBox(height: 100), // Extra space for bottom navigation

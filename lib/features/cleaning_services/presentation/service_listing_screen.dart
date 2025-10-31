@@ -3,10 +3,10 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 import 'package:hancod_machine_test/core/constants/app_colors.dart';
 import 'package:hancod_machine_test/core/constants/app_spacing.dart';
+import 'package:hancod_machine_test/core/constants/app_text_styles.dart';
 import 'package:hancod_machine_test/features/cart/controller/cart_controller.dart';
 import 'package:hancod_machine_test/features/common/cart_summary_bar.dart';
-import 'package:hancod_machine_test/features/cleaning_services/controller/service_controller.dart';
-import 'package:hancod_machine_test/features/cleaning_services/models/service_model.dart';
+import 'package:hancod_machine_test/features/cleaning_services/data/providers/service_providers.dart';
 import 'package:hancod_machine_test/routes/app_routes.dart';
 import 'package:hancod_machine_test/features/cleaning_services/presentation/widgets/cleaning_services_header.dart';
 import 'package:hancod_machine_test/features/cleaning_services/presentation/widgets/service_item_card.dart';
@@ -17,7 +17,7 @@ class ServiceListingScreen extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final cartState = ref.watch(cartControllerProvider);
-    final selectedServices = ref.watch(servicesForSelectedCategoryProvider);
+    final servicesAsync = ref.watch(servicesForSelectedCategoryProvider);
     final totalPrice = cartState.subtotal;
     final totalItems = cartState.totalItems;
 
@@ -67,28 +67,48 @@ class ServiceListingScreen extends ConsumerWidget {
               children: [
                 const CleaningServicesHeader(),
                 Expanded(
-                  child: ListView.builder(
-                    padding: EdgeInsets.fromLTRB(
-                      AppSpacing.lg,
-                      AppSpacing.lg,
-                      AppSpacing.lg,
-                      AppSpacing.xxxl + AppSpacing.xxl,
+                  child: servicesAsync.when(
+                    data: (services) => ListView.builder(
+                      padding: EdgeInsets.fromLTRB(
+                        AppSpacing.lg,
+                        AppSpacing.lg,
+                        AppSpacing.lg,
+                        AppSpacing.xxxl + AppSpacing.xxl,
+                      ),
+                      itemCount: services.length,
+                      itemBuilder: (context, index) {
+                        final service = services[index];
+                        return ServiceCard(service: service);
+                      },
                     ),
-                    itemCount: selectedServices.length,
-                    itemBuilder: (context, index) {
-                      final cleaningService = selectedServices[index];
-                      return ServiceCard(
-                        service: ServiceModel(
-                          id: cleaningService.id,
-                          image: cleaningService.imageUrl,
-                          title: cleaningService.name,
-                          duration: '${cleaningService.duration} mins',
-                          price: cleaningService.price,
-                          rating: cleaningService.rating,
-                          orders: cleaningService.orders,
-                        ),
-                      );
-                    },
+                    loading: () => const Center(
+                      child: CircularProgressIndicator(
+                        color: AppColors.primary,
+                      ),
+                    ),
+                    error: (error, stack) => Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Icon(
+                            Icons.error_outline,
+                            size: 48,
+                            color: Colors.red,
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Error loading services',
+                            style: AppTextStyles.heading2,
+                          ),
+                          const SizedBox(height: 8),
+                          Text(
+                            error.toString(),
+                            style: AppTextStyles.caption,
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ],

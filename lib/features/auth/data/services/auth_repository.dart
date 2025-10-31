@@ -1,7 +1,12 @@
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:supabase_flutter/supabase_flutter.dart' as supabase_lib;
+import 'package:firebase_auth/firebase_auth.dart';
 
 import 'google_auth_service.dart';
 import '../models/user_model.dart';
+
+/// Global Supabase client instance
+final supabase = supabase_lib.Supabase.instance.client;
 
 // Provider for GoogleAuthService
 final googleAuthServiceProvider = Provider<GoogleAuthService>((ref) {
@@ -37,7 +42,12 @@ class AuthRepository {
     try {
       final userCredential = await _googleAuthService.signInWithGoogle();
       if (userCredential?.user != null) {
-        return UserModel.fromFirebaseUser(userCredential!.user!);
+        final firebaseUser = userCredential!.user!;
+        
+        // Sync user data to Supabase
+        await syncUserWithSupabase(firebaseUser);
+        
+        return UserModel.fromFirebaseUser(firebaseUser);
       }
       return null;
     } catch (e) {
@@ -74,4 +84,26 @@ class AuthRepository {
 
   // Get user photo URL
   String? get userPhotoURL => _googleAuthService.userPhotoURL;
+
+  /// Sync the Firebase user with Supabase database
+  Future<void> syncUserWithSupabase(User firebaseUser) async {
+    try {
+      final data = {
+        'firebase_uid': firebaseUser.uid,
+        'name': firebaseUser.displayName,
+        'email': firebaseUser.email,
+        'phone': firebaseUser.phoneNumber,
+        'photo_url': firebaseUser.photoURL,
+      };
+
+      await supabase.from('users').upsert(
+        data,
+        onConflict: 'firebase_uid',
+      );
+
+      print('✅ User synced successfully to Supabase.');
+    } catch (e) {
+      print('❌ Error syncing user to Supabase: $e');
+    }
+  }
 }

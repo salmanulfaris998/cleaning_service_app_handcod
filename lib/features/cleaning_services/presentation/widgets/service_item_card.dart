@@ -37,12 +37,50 @@ class ServiceCard extends ConsumerWidget {
           //  Image
           ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: Image.asset(
-              service.image,
-              height: 85,
-              width: 85,
-              fit: BoxFit.cover,
-            ),
+            child: service.imageUrl.startsWith('http')
+                ? Image.network(
+                    service.imageUrl,
+                    height: 85,
+                    width: 85,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      height: 85,
+                      width: 85,
+                      color: Colors.grey[300],
+                      child: const Icon(
+                        Icons.cleaning_services,
+                        color: Colors.grey,
+                        size: 40,
+                      ),
+                    ),
+                    loadingBuilder: (context, child, loadingProgress) {
+                      if (loadingProgress == null) return child;
+                      return Container(
+                        height: 85,
+                        width: 85,
+                        color: Colors.grey[200],
+                        child: const Center(
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                      );
+                    },
+                  )
+                : Image.asset(
+                    service.imageUrl,
+                    height: 85,
+                    width: 85,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) => Container(
+                      height: 85,
+                      width: 85,
+                      color: Colors.grey[300],
+                      child: const Icon(
+                        Icons.cleaning_services,
+                        color: Colors.grey,
+                        size: 40,
+                      ),
+                    ),
+                  ),
           ),
           const SizedBox(width: 14),
 
@@ -67,7 +105,7 @@ class ServiceCard extends ConsumerWidget {
                           ),
                           const SizedBox(width: 4),
                           Text(
-                            '(${service.rating.toStringAsFixed(1)}/5) ${service.orders} Orders',
+                            '(${service.rating.toStringAsFixed(1)}/5) ${service.ordersCount} Orders',
                             style: AppTextStyles.caption.copyWith(
                               fontSize: 13,
                               color: AppColors.textSecondary,
@@ -77,7 +115,7 @@ class ServiceCard extends ConsumerWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        service.title,
+                        service.name,
                         style: AppTextStyles.heading2.copyWith(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -86,7 +124,7 @@ class ServiceCard extends ConsumerWidget {
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        service.duration,
+                        '${service.durationMins} mins',
                         style: AppTextStyles.bodyLight.copyWith(
                           fontSize: 13,
                           color: AppColors.textSecondary,
@@ -127,7 +165,7 @@ class ServiceCard extends ConsumerWidget {
                               cartNotifier.addItem(
                                 CartItem(
                                   id: service.id,
-                                  name: service.title,
+                                  name: service.name,
                                   price: service.price,
                                   quantity: 1,
                                 ),
