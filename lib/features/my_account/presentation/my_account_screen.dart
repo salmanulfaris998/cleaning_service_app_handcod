@@ -1,16 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 
-import '../../../core/constants/app_colors.dart';
-import '../../../core/constants/app_images.dart';
-import '../../../core/constants/app_spacing.dart';
-import '../../../core/constants/app_text_styles.dart';
-import '../auth/controllers/auth_controller.dart';
-import 'presentation/widgets/account_option_tile.dart';
-import 'presentation/widgets/account_profile_card.dart';
-import 'presentation/widgets/account_profile_header_delegate.dart';
-import 'presentation/widgets/account_wallet_card.dart';
-import 'presentation/widgets/logout_dialog.dart';
+import '../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_images.dart';
+import '../../../../core/constants/app_spacing.dart';
+import '../../../../core/constants/app_text_styles.dart';
+import '../../auth/controllers/auth_controller.dart';
+import 'widgets/account_option_tile.dart';
+import 'widgets/account_profile_card.dart';
+import 'widgets/account_profile_header_delegate.dart';
+import 'widgets/account_wallet_card.dart';
+import 'widgets/logout_dialog.dart';
 
 class MyAccountScreen extends ConsumerWidget {
   const MyAccountScreen({super.key});

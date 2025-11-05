@@ -3,90 +3,51 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../core/widgets/safe_page_wrapper.dart';
-
 import '../../core/constants/app_colors.dart';
 import '../../core/constants/app_images.dart';
 import '../../core/constants/app_text_styles.dart';
 import '../../core/constants/app_texts.dart';
-import '../bookings/bookings_screen.dart';
-import '../home/presentation/home_screen.dart';
-import '../my_account/my_account_screen.dart';
 
-final navIndexProvider = StateProvider<int>((ref) => 0);
+class MainNavigationScreen extends ConsumerWidget {
+  const MainNavigationScreen({super.key, required this.navigationShell});
 
-class MainNavigationScreen extends ConsumerStatefulWidget {
-  const MainNavigationScreen({super.key, required Widget child});
-
-  @override
-  ConsumerState<MainNavigationScreen> createState() =>
-      _MainNavigationScreenState();
-}
-
-class _MainNavigationScreenState extends ConsumerState<MainNavigationScreen> {
-  final List<Widget> _pages = const [
-    HomeScreen(),
-    BookingsScreen(),
-    MyAccountScreen(),
-  ];
-
-  final List<String> _labels = const [
-    AppTexts.navHome,
-    AppTexts.navBookings,
-    AppTexts.navAccount,
-  ];
-
-  final List<String> _iconPaths = const [
-    AppImages.navHome,
-    AppImages.navBooking,
-    AppImages.navAccount,
-  ];
-
-  final PageController _pageController = PageController();
+  final StatefulNavigationShell navigationShell;
 
   void _onTabSelected(int index) {
-    ref.read(navIndexProvider.notifier).state = index;
-    _pageController.animateToPage(
+    navigationShell.goBranch(
       index,
-      duration: const Duration(milliseconds: 350),
-      curve: Curves.easeInOut,
+      initialLocation: index == navigationShell.currentIndex,
     );
   }
 
   @override
-  void dispose() {
-    _pageController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final selectedIndex = ref.watch(navIndexProvider);
-
+  Widget build(BuildContext context, WidgetRef ref) {
     return SafePageWrapper(
       child: Scaffold(
         backgroundColor: AppColors.background,
         body: Stack(
           children: [
-            // 🔹 Fade transition for tab switching
-            AnimatedSwitcher(
-              duration: const Duration(milliseconds: 400),
-              switchInCurve: Curves.easeIn,
-              switchOutCurve: Curves.easeOut,
-              transitionBuilder: (child, animation) =>
-                  FadeTransition(opacity: animation, child: child),
-              child: _pages[selectedIndex],
-            ),
+            // StatefulNavigationShell automatically preserves state
+            navigationShell,
 
-            // 🔹 Custom Bottom Navigation Bar
+            // Custom Bottom Navigation Bar
             Positioned(
               left: 0,
               right: 0,
               bottom: 0,
               child: _CustomBottomNavBar(
-                selectedIndex: selectedIndex,
+                selectedIndex: navigationShell.currentIndex,
                 onTabSelected: _onTabSelected,
-                labels: _labels,
-                iconPaths: _iconPaths,
+                labels: const [
+                  AppTexts.navHome,
+                  AppTexts.navBookings,
+                  AppTexts.navAccount,
+                ],
+                iconPaths: const [
+                  AppImages.navHome,
+                  AppImages.navBooking,
+                  AppImages.navAccount,
+                ],
               ),
             ),
           ],
@@ -152,12 +113,8 @@ class _CustomBottomNavBar extends StatelessWidget {
                 children: [
                   Image.asset(
                     iconPaths[index],
-                    height: index == 0
-                        ? 28
-                        : 24, // Larger size for home icon (index 0)
-                    width: index == 0
-                        ? 28
-                        : 24, // Larger size for home icon (index 0)
+                    height: index == 0 ? 28 : 24,
+                    width: index == 0 ? 28 : 24,
                     color: isSelected ? null : AppColors.textHint,
                   ),
                   if (isSelected) ...[

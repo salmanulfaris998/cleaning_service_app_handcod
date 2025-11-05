@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
-
 import '../core/widgets/safe_page_wrapper.dart';
 import '../features/auth/presentation/login_screen.dart';
 import '../features/auth/presentation/phone_otp_screen.dart';
@@ -9,7 +8,7 @@ import '../features/bookings/bookings_screen.dart';
 import '../features/cart/presentation/cart_screen.dart';
 import '../features/common/main_navigation_screen.dart';
 import '../features/home/presentation/home_screen.dart';
-import '../features/my_account/my_account_screen.dart';
+import '../features/my_account/presentation/my_account_screen.dart';
 import '../features/cleaning_services/presentation/service_listing_screen.dart';
 
 class AppRoutes {
@@ -42,30 +41,54 @@ class AppRoutes {
           child: const SafePageWrapper(child: PhoneOtpScreen()),
         ),
       ),
-      ShellRoute(
-        builder: (context, state, child) => MainNavigationScreen(child: child),
-        routes: [
-          GoRoute(
-            path: home,
-            name: 'home',
-            pageBuilder: (context, state) =>
-                _fadeTransition(const SafePageWrapper(child: HomeScreen())),
+
+      // ✅ Changed from ShellRoute to StatefulShellRoute
+      StatefulShellRoute.indexedStack(
+        builder: (context, state, navigationShell) {
+          return MainNavigationScreen(navigationShell: navigationShell);
+        },
+        branches: [
+          // Branch 0: Home
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: home,
+                name: 'home',
+                pageBuilder: (context, state) => const NoTransitionPage(
+                  child: SafePageWrapper(child: HomeScreen()),
+                ),
+              ),
+            ],
           ),
-          GoRoute(
-            path: bookings,
-            name: 'bookings',
-            pageBuilder: (context, state) =>
-                _fadeTransition(const SafePageWrapper(child: BookingsScreen())),
+
+          // Branch 1: Bookings
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: bookings,
+                name: 'bookings',
+                pageBuilder: (context, state) => const NoTransitionPage(
+                  child: SafePageWrapper(child: BookingsScreen()),
+                ),
+              ),
+            ],
           ),
-          GoRoute(
-            path: account,
-            name: 'account',
-            pageBuilder: (context, state) => _fadeTransition(
-              const SafePageWrapper(child: MyAccountScreen()),
-            ),
+
+          // Branch 2: Account
+          StatefulShellBranch(
+            routes: [
+              GoRoute(
+                path: account,
+                name: 'account',
+                pageBuilder: (context, state) => const NoTransitionPage(
+                  child: SafePageWrapper(child: MyAccountScreen()),
+                ),
+              ),
+            ],
           ),
         ],
       ),
+
       GoRoute(
         path: services,
         name: 'services',
@@ -84,19 +107,4 @@ class AppRoutes {
       ),
     ],
   );
-
-  // 🔹 Fade Transition for all tab routes
-  static CustomTransitionPage _fadeTransition(Widget child) {
-    return CustomTransitionPage(
-      key: ValueKey(child.hashCode),
-      child: child,
-      transitionsBuilder: (context, animation, secondaryAnimation, child) {
-        return FadeTransition(
-          opacity: CurvedAnimation(parent: animation, curve: Curves.easeInOut),
-          child: child,
-        );
-      },
-      transitionDuration: const Duration(milliseconds: 300),
-    );
-  }
 }
